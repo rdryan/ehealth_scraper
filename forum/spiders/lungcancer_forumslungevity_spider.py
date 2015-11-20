@@ -29,13 +29,12 @@ class ForumsSpider(CrawlSpider):
             # configuration pages that aren't scrapeable (and are mostly redundant anyway)
             Rule(LinkExtractor(
                     restrict_xpaths='//a[@class="topic_title"]',
-                    canonicalize=True,
+                    canonicalize=False,
                 ), callback='parsePostsList'),
             # Rule to follow arrow to next product grid
             Rule(LinkExtractor(
-                    restrict_xpaths='//li[@class="page"]/a[contains(@href,"page")]',
-                    canonicalize=True,
-                    deny=(r'user_profile_*\.html',)
+                    restrict_xpaths='//li[@class="next"]',
+                    canonicalize=False,
                 ), follow=True),
         )
 
@@ -50,7 +49,7 @@ class ForumsSpider(CrawlSpider):
     def parsePostsList(self,response):
         sel = Selector(response)
         #posts = sel.css(".vt_post_holder")
-        posts = sel.xpath('//div[@class="post_body")]')
+        posts = sel.xpath('//div[@class="post_wrap"]')
         items = []
         topic = ''.join(sel.xpath('//h1[@class="ipsType_pagetitle"]/text()').extract())
         url = response.url
@@ -63,7 +62,7 @@ class ForumsSpider(CrawlSpider):
             item['create_date'] = ''.join(post.xpath('.//abbr[@class="published"]/text()').extract())
             #item['create_date']= self.cleanText(create_date) 
             
-            message = ''.join(post.xpath('.//div[@div="post entry-content ")]/text()').extract())
+            message = ''.join(post.xpath('.//div[@class="post entry-content "]//text()').extract())
             item['post'] = self.cleanText(message)
             item['tag']='lungcancer'
             item['topic'] = topic
