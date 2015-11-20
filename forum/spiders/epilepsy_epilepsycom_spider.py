@@ -61,7 +61,7 @@ class ForumsSpider(CrawlSpider):
         message = response.xpath('//div[@class="panel-pane pane-entity-field pane-node-field-body no-title block"]//div[@class="field-item even"]/p/text()').extract()
         item['post'] = self.cleanText(message)
         # item['post'] = re.sub('\s+',' '," ".join(response.xpath('//div[@class="panel-pane pane-entity-field pane-node-field-body no-title block"]//div[@class="field-item even"]/p/text()').extract()).replace("\t","").replace("\n","").replace("\r",""))
-        item['tag']=''
+        # item['tag']=''
         item['topic'] = topic
         item['url']=url
         logging.info(item.__str__)

@@ -80,14 +80,16 @@ class ForumsSpider(Spider):
         items = []
         topic = sel.xpath('//*[@id="topic"]/article/h1/text()').extract()[0]
         url = response.url
+        condition = "rheumatoid arthritis"
         post = sel.xpath('//*[@id="topic"]')
         item = PostItemsList()
         item['author'] = post.xpath('./div/a/p/strong[2]/text()').extract()[0].strip()
         item['author_link']=response.urljoin(post.xpath("./div/a/@href").extract()[0])
+        item['condition'] = condition
         item['create_date']= self.parseText(str=post.xpath('./article/span/time/@title').extract()[0])
         post_msg=self.parseText(str=post.xpath('./article/div/p').extract()[0])
         item['post']=post_msg
-        item['tag']='rheumatoid arthritis'
+        # item['tag']='rheumatoid arthritis'
         item['topic'] = topic
         item['url']=url
         logging.info(post_msg)
@@ -99,10 +101,11 @@ class ForumsSpider(Spider):
                 continue
             item['author'] = post.xpath("./article/span[1]/a[1]/text()").extract()[0].strip()
             item['author_link']=response.urljoin(post.xpath("./article/span[1]/a[1]/@href").extract()[0])
+            item['condition'] = condition
             item['create_date']= self.parseText(str=post.xpath('./article/span[2]/time/@title').extract()[0])
             post_msg=self.parseText(str=post.xpath('./article/div[1]/p').extract()[0])
             item['post']=post_msg
-            item['tag']='rheumatoid arthritis'
+            # item['tag']='rheumatoid arthritis'
             item['topic'] = topic
             item['url']=url
             logging.info(post_msg)

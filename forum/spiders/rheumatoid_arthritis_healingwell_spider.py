@@ -43,6 +43,13 @@ class ForumsSpider(CrawlSpider):
             ), follow=True),
         )
 
+
+    def cleanText(self, str):
+        soup = BeautifulSoup(str, 'html.parser')
+        return re.sub(" +|\n|\r|\t|\0|\x0b|\xa0",' ',soup.get_text()).strip()
+
+
+
     # https://github.com/scrapy/dirbot/blob/master/dirbot/spiders/dmoz.py
     # https://github.com/scrapy/dirbot/blob/master/dirbot/pipelines.py
     def parsePost(self,response):
@@ -50,18 +57,18 @@ class ForumsSpider(CrawlSpider):
         sel = Selector(response)
         posts = sel.css("Table.PostBox")
         items = []
+        condition="rheumatoid arthritis"
         topic = response.xpath('//div[contains(@id,"PageTitle")]/h1/text()').extract()[0]
         url = response.url
         for post in posts:
             item = PostItemsList()
             item['author'] = post.css('.msgUser').xpath("./a[2]").xpath("text()").extract()[0]
             item['author_link']=response.urljoin(post.css('.msgUser').xpath("./a[2]/@href").extract()[0])
-            item['create_date']= re.sub(" +|\n|\r|\t|\0|\x0b|\xa0",' ',response.css('td.msgThreadInfo').xpath('text()').extract()[0]).strip()
-            post_msg=post.css('.PostMessageBody').extract()[0]
-            soup = BeautifulSoup(post_msg, 'html.parser')
-            post_msg = re.sub(" +|\n|\r|\t|\0|\x0b|\xa0",' ',soup.get_text()).strip()
+            item['condition'] = condition
+            item['create_date']= self.cleanText(' ',response.css('td.msgThreadInfo').xpath('text()').extract()[0])
+            post_msg= self.cleanText(post.css('.PostMessageBody').extract()[0])
             item['post']=post_msg
-            item['tag']='rheumatoid arthritis'
+            # item['tag']='rheumatoid arthritis'
             item['topic'] = topic
             item['url']=url
             logging.info(post_msg)

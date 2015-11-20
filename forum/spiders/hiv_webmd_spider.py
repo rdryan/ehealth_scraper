@@ -46,6 +46,11 @@ class ForumsSpider(CrawlSpider):
                 ), follow=True),
         )
 
+
+    def parseText(self, str):
+        soup = BeautifulSoup(str, 'html.parser')
+        return re.sub(" +|\n|\r|\t|\0|\x0b|\xa0",' ',soup.get_text()).strip()
+
     # https://github.com/scrapy/dirbot/blob/master/dirbot/spiders/dmoz.py
     # https://github.com/scrapy/dirbot/blob/master/dirbot/pipelines.py
     def parsePost(self,response):
@@ -70,11 +75,10 @@ class ForumsSpider(CrawlSpider):
         date = date[date.find('DateDelta')+11:date.rfind("'")]
         item['condition'] = condition
         item['create_date'] = date
-        post_msg=post.css('.post_fmt').extract()[0]
-        soup = BeautifulSoup(post_msg, 'html.parser')
-        post_msg = re.sub(" +|\n|\r|\t|\0|\x0b|\xa0",' ',soup.get_text()).strip()
-        item['post']=post_msg
-        item['tag']=''
+        # soup = BeautifulSoup(post_msg, 'html.parser')
+        # post_msg = re.sub(" +|\n|\r|\t|\0|\x0b|\xa0",' ',soup.get_text()).strip()
+        item['post']=self.cleanText(post.css('.post_fmt').extract()[0])
+        # item['tag']=''
         item['topic'] = topic
         item['url']=url
         logging.info(post_msg)
@@ -94,11 +98,10 @@ class ForumsSpider(CrawlSpider):
             date = date[date.find('DateDelta')+11:date.rfind("'")]
             item['condition'] = condition
             item['create_date'] = date
-            post_msg=post.css('.post_fmt').extract()[0]
-            soup = BeautifulSoup(post_msg, 'html.parser')
-            post_msg = re.sub(" +|\n|\r|\t|\0|\x0b|\xa0",' ',soup.get_text()).strip()
-            item['post']=post_msg
-            item['tag']='hiv'
+            # soup = BeautifulSoup(post_msg, 'html.parser')
+            # post_msg = re.sub(" +|\n|\r|\t|\0|\x0b|\xa0",' ',soup.get_text()).strip()
+            item['post']=self.cleanText(post.css('.post_fmt').extract()[0])
+            # item['tag']='hiv'
             item['topic'] = topic
             item['url']=url
             logging.info(post_msg)

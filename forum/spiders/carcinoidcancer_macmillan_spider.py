@@ -50,17 +50,17 @@ class ForumsSpider(CrawlSpider):
         posts = sel.css('.content-item')
         items = []
         topic = sel.css('.forum-stats-container').xpath('./h1/text()').extract()[0].strip()
-        condition="Carcinoid Cancer"
+        condition="carcinoid cancer"
         url = response.url
         for post in posts:
             item = PostItemsList()
             item['author'] = self.parseText(str=post.css('.user-name').xpath('./a').extract()[0].strip())
             item['author_link']=response.urljoin(post.css('.user-name').xpath('./a/@href').extract()[0])
-            item['condition']="Carcinoid Cancer"
+            item['condition']=condition
             item['create_date'] = self.parseText(str=post.css('.post-date').extract()[0])
             post_msg=self.parseText(str=post.css('.post-content ').extract()[0])
             item['post']=post_msg
-            item['tag']=''
+            # item['tag']=''
             item['topic'] = topic
             item['url']=url
             logging.info(post_msg)

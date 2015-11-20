@@ -53,7 +53,7 @@ class EpilepsyCancerSpiderSpider(CrawlSpider):
         node_item['condition'] = condition
         node_item['create_date'] = node_time
         node_item['post'] = node_message
-        node_item['tag'] = 'epilepsy'
+        # node_item['tag'] = 'epilepsy'
         node_item['topic'] = subject
         node_item['url'] = url
 
@@ -72,7 +72,7 @@ class EpilepsyCancerSpiderSpider(CrawlSpider):
             item['condition'] = condition
             item['create_date'] = date
             item['post'] = self.cleanText(message)
-            item['tag'] = 'epilepsy'
+            # item['tag'] = 'epilepsy'
             item['topic'] = subject
             item['url'] = url
 

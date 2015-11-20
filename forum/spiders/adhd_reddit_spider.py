@@ -63,7 +63,7 @@ class ForumsSpider(CrawlSpider):
             item['create_date']= ''.join(post.xpath('.//time/@title').extract())
             message = ''.join(post.xpath('.//div[@class="usertext-body may-blank-within md-container "]//text()').extract())
             item['post'] = self.cleanText(message)
-            item['tag']='adhd'
+            # item['tag']='adhd'
             item['topic'] = topic
             item['url']=url
             items.append(item)

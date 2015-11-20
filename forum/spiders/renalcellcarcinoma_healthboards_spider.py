@@ -55,7 +55,7 @@ class ForumsSpider(CrawlSpider):
         items = []
         topic = sel.xpath('/html/body/table/tr/td/div[2]/div/div[1]/font/b/text()').extract()[0].strip()
         url = response.url
-        condition ='Renal Cell Carcinoma'
+        condition ="renal cell carcinoma"
         for post in posts:
             if len(post.css('.alt2'))==0:
                 continue
@@ -66,7 +66,7 @@ class ForumsSpider(CrawlSpider):
             item['create_date'] = self.parseText(str=post.css('.thead').extract()[0].strip())
             post_msg=self.parseText(str=post.css('.alt1').xpath('./div[2]').extract()[0])
             item['post']=post_msg
-            item['tag']=condition
+            # item['tag']=condition
             item['topic'] = topic
             item['url']=url
             logging.info(post_msg)

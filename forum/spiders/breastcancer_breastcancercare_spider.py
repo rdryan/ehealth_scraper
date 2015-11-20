@@ -3,6 +3,7 @@ from scrapy.linkextractors import LinkExtractor
 from scrapy.spiders import CrawlSpider, Rule
 from bs4 import BeautifulSoup
 import re
+from bs4 import BeautifulSoup
 from forum.items import PostItemsList
 
 
@@ -85,7 +86,7 @@ class EpilepsyBreastcancercareSpiderSpider(CrawlSpider):
             item['condition'] = condition
             item['create_date'] = create_date
             item['post'] = self.cleanText(message)
-            item['tag'] = 'epilepsy'
+            # item['tag'] = 'epilepsy'
             item['topic'] = subject
             item['url'] = url
 

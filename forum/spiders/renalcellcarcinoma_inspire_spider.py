@@ -51,6 +51,7 @@ class ForumsSpider(CrawlSpider):
             ), callback='parsePost', follow=True),
         )
 
+
     # https://github.com/scrapy/dirbot/blob/master/dirbot/spiders/dmoz.py
     # https://github.com/scrapy/dirbot/blob/master/dirbot/pipelines.py
     def parsePost(self,response):
@@ -58,7 +59,7 @@ class ForumsSpider(CrawlSpider):
         sel = Selector(response)
         posts = sel.css('.comments-box')
         items = []
-        condition="Renal Cell Carcinoma"
+        condition="renal cell carcinoma"
         topic = sel.css('.post-title').xpath('./text()').extract()[0].strip()
         url = response.url
 

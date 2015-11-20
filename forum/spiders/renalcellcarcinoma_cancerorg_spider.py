@@ -65,7 +65,7 @@ class ForumsSpider(CrawlSpider):
         logging.info(response)
         sel = Selector(response)
         posts = sel.xpath('//*[@id="comments"]').css('.comment-forum')
-        condition="Renal Cell Carcinoma"
+        condition="renal cell carcinoma"
         items = []
         topic = sel.xpath('//*[@id="squeeze"]/div/div/h2/text()').extract()[0].strip()
         url = response.url

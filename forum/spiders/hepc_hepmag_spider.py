@@ -65,6 +65,7 @@ class ForumsSpider(CrawlSpider):
     # https://github.com/scrapy/dirbot/blob/master/dirbot/spiders/dmoz.py
     # https://github.com/scrapy/dirbot/blob/master/dirbot/pipelines.py
     def parsePostsList(self,response):
+        condition ="hep c"
         try:
             document = lxml.html.fromstring(response.body)
             document.make_links_absolute(base_url=response.url, resolve_base_href=True)
@@ -78,6 +79,7 @@ class ForumsSpider(CrawlSpider):
             poster = postWrapper.cssselect(".poster")[0]
             post['author'] = poster.xpath("./h4/a/text()")[0]
             post['author_link'] = poster.xpath("./h4/a/@href")[0]
+            post['condition'] = condition
             post['create_date'] = self.cleanText(" ".join(keyinfo.cssselect('.smalltext')[0].xpath("text()")))
             post['topic'] = keyinfo.cssselect('h5')[0].xpath("./a/text()")[0]
             post['post'] = self.cleanText(" ".join(postWrapper.cssselect(".post")[0].xpath("./div/text()")))

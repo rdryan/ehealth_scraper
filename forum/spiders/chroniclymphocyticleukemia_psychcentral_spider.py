@@ -45,7 +45,7 @@ class PsychCentral(scrapy.Spider):
 		date = date.replace('\r','')
 		date = date.replace('\n','')
 		date = date.replace('\t','')
-
+		condition = "chronic lymphocytic leukemia"
 		topic = self.cleanText(response.xpath(
 				'//td[contains(@class,"navbar")]/strong/text()'
 				).extract()[0])
@@ -53,7 +53,7 @@ class PsychCentral(scrapy.Spider):
 		item = PostItemsList()
 		item['author'] = response.css('.bigusername').xpath('text()').extract_first()
 		item['author_link'] = response.css('.bigusername').xpath('@href').extract_first()
-		item['condition']="chronic lymphocytic leukemia"
+		item['condition']=condition
 		item['create_date'] = date
 		item['post'] = self.cleanText(post_text)
 		item['topic'] = topic

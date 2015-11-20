@@ -76,6 +76,13 @@ class ForumsSpider(Spider):
                 return requestList
         self.driver.close()
 
+
+    def cleanText(self,text):
+        soup = BeautifulSoup(text,'html.parser')
+        text = soup.get_text();
+        text = re.sub("( +|\n|\r|\t|\0|\x0b|\xa0|\xbb|\xab)+",' ',text).strip()
+        return text 
+
     # https://github.com/scrapy/dirbot/blob/master/dirbot/spiders/dmoz.py
     # https://github.com/scrapy/dirbot/blob/master/dirbot/pipelines.py
     def parsePost(self,response):
@@ -84,8 +91,9 @@ class ForumsSpider(Spider):
         items = []
         if len(sel.xpath('//*[@id="content"]/table/thead/tr/th[1]'))==0:
             return items
-        topic = ''
-        item='hiv'
+        # topic = ''
+        # item='hiv'
+        condition = "hiv"
         url = response.url
         item = PostItemsList()
         item['author'] = sel.xpath('//*[@id="content"]/table/thead/tr/th[1]/span/text()').extract()[0]
@@ -97,7 +105,7 @@ class ForumsSpider(Spider):
         soup = BeautifulSoup(post_msg, 'html.parser')
         post_msg = re.sub(" +|\n|\r|\t|\0|\x0b|\xa0",' ',soup.get_text()).strip()
         item['post']=post_msg
-        item['tag']='hiv'
+        # item['tag']='hiv'
         item['topic'] = topic
         item['url']=url
         logging.info(post_msg)
@@ -112,7 +120,7 @@ class ForumsSpider(Spider):
         soup = BeautifulSoup(post_msg, 'html.parser')
         post_msg = re.sub(" +|\n|\r|\t|\0|\x0b|\xa0",' ',soup.get_text()).strip()
         item['post']=post_msg
-        item['tag']='hiv'
+        # item['tag']='hiv'
         item['topic'] = topic
         item['url']=url
         logging.info(post_msg)

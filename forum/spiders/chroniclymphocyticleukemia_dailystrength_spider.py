@@ -68,14 +68,14 @@ class DailyStrength(scrapy.Spider):
 		author_all_text = author_all_text.replace('\t','')
 		author_all_text = author_all_text.replace('  ','')
 		author_all_text = author_all_text.replace('\n','')
-
+		condition = "chronic lymphocytic leukemia"
 		topic = response.xpath("//div[contains(@class,'discussion_topic_header_subject')]/text()").extract()[0]
 
 		item = PostItemsList()
 
 		item['author'] = author_name
 		item['author_link'] = author_link
-		item['condition']="chronic lymphocytic leukemia"
+		item['condition']=condition
 		item['create_date'] = author_posted
 		item['post'] = author_all_text
 		item['topic'] = topic

@@ -69,7 +69,7 @@ class ForumsSpider(CrawlSpider):
         item['create_date'] = self.parseText(sel.css('.content-primary-post').xpath('./div[1]/ul/li[1]/text()').extract()[1].split('\n')[1].strip()[1:])
         post_msg=self.parseText(str=sel.css('.content-primary-post').xpath('./div[2]/p').extract()[0])
         item['post']=post_msg
-        item['tag']=''
+        # item['tag']=''
         item['topic'] = topic
         item['url']=url
         logging.info(post_msg)
@@ -85,7 +85,7 @@ class ForumsSpider(CrawlSpider):
             item['create_date'] = self.parseText(str=post.css('.post-info').xpath('./ul/li[3]').extract()[0])
             post_msg=self.parseText(str=post.xpath('./p').extract()[0])
             item['post']=post_msg
-            item['tag']=''
+            # item['tag']=''
             item['topic'] = topic
             item['url']=url
             logging.info(post_msg)

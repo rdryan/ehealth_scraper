@@ -81,7 +81,7 @@ class ForumsSpider(CrawlSpider):
         # # soup = BeautifulSoup(post_msg, 'html.parser')
         # post_msg = re.sub(" +|\n|\r|\t|\0|\x0b|\xa0",' ',soup.get_text()).strip()
         item['post']=self.cleanText(post_msg)
-        item['tag']=condition
+        # item['tag']=condition
         item['topic'] = topic
         item['url']=url
         logging.info(post_msg)
@@ -98,7 +98,7 @@ class ForumsSpider(CrawlSpider):
             # soup = BeautifulSoup(post_msg, 'html.parser')
             # post_msg = re.sub(" +|\n|\r|\t|\0|\x0b|\xa0",' ',soup.get_text()).strip()
             item['post']=self.cleanText(post_msg)
-            item['tag']='epilepsy'
+            # item['tag']='epilepsy'
             item['topic'] = topic
             item['url']=url
             logging.info(post_msg)

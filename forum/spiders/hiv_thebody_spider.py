@@ -3,8 +3,8 @@ from scrapy.contrib.spiders import CrawlSpider, Rule
 from scrapy.contrib.linkextractors import LinkExtractor
 from scrapy.selector import Selector
 from forum.items import PostItemsList
-import re
 import logging
+import re
 from bs4 import BeautifulSoup
 # import lxml.html
 # from lxml.etree import ParserError
@@ -44,11 +44,16 @@ class ForumsSpider(CrawlSpider):
                 ), follow=True),
         )
 
+    def cleanText(self, str):
+        soup = BeautifulSoup(str, 'html.parser')
+        return re.sub(" +|\n|\r|\t|\0|\x0b|\xa0",' ',soup.get_text()).strip()
+
     # https://github.com/scrapy/dirbot/blob/master/dirbot/spiders/dmoz.py
     # https://github.com/scrapy/dirbot/blob/master/dirbot/pipelines.py
     def parsePost(self,response):
         logging.info(response)
         sel = Selector(response)
+        condition = "hiv"
         items = []
         if len(sel.xpath('//*[@id="maincontent_forums"]/div[4]/table/tr[1]/td[3]/h1'))==0:
             return items
@@ -58,12 +63,13 @@ class ForumsSpider(CrawlSpider):
         item['author'] = ""
         item['author_link']=""
         date = sel.xpath('//*[@id="maincontent_forums"]/div[4]/table/tr[1]/td[3]/p[1]/text()').extract()[0]
+        item['condition']=condition
         item['create_date']=date
         post_msg=sel.xpath('//*[@id="maincontent_forums"]/div[4]/table/tr[1]/td[3]/p[3]').extract()[0]
-        soup = BeautifulSoup(post_msg, 'html.parser')
-        post_msg = re.sub(" +|\n|\r|\t|\0|\x0b|\xa0",' ',soup.get_text()).strip()
+        # soup = BeautifulSoup(post_msg, 'html.parser')
+        # post_msg = re.sub(" +|\n|\r|\t|\0|\x0b|\xa0",' ',soup.get_text()).strip()
         item['post']=post_msg
-        item['tag']='hiv'
+        # item['tag']='hiv'
         item['topic'] = topic
         item['url']=url
         logging.info(post_msg)
@@ -72,12 +78,11 @@ class ForumsSpider(CrawlSpider):
         item = PostItemsList()
         item['author'] = sel.xpath('//*[@id="response"]/h1/text()').extract()[0]
         item['author_link']=""
+        item['condition'] = condition
         item['create_date'] = date
-        post_msg = sel.xpath('//*[@id="response"]/p').extract()[0]
-        soup = BeautifulSoup(post_msg, 'html.parser')
-        post_msg = re.sub(" +|\n|\r|\t|\0|\x0b|\xa0",' ',soup.get_text()).strip()
+        post_msg = self.cleanText(sel.xpath('//*[@id="response"]/p').extract()[0])
         item['post']=post_msg
-        item['tag']='hiv'
+        # item['tag']='hiv'
         item['topic'] = topic
         item['url']=url
         logging.info(post_msg)

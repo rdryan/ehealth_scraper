@@ -4,6 +4,7 @@ from scrapy.contrib.linkextractors import LinkExtractor
 from scrapy.selector import Selector
 from forum.items import PostItemsList
 import re
+from bs4 import BeautifulSoup
 import logging
 
 class ForumsSpider(CrawlSpider):
@@ -26,22 +27,28 @@ class ForumsSpider(CrawlSpider):
                 ), follow=True),
         )
 
+    def cleanText(self,text):
+        soup = BeautifulSoup(text,'html.parser')
+        text = soup.get_text();
+        text = re.sub("( +|\n|\r|\t|\0|\x0b|\xa0|\xbb|\xab)+",' ',text).strip()
+        return text 
+
     def parsePostsList(self,response):
         sel = Selector(response)
         posts = sel.xpath('//table[@class="PostBox"]')
         items = []
         topic = response.xpath('//h1/text()').extract_first()
         url = response.url
-        
+        condition="hep c"
         for post in posts:
             item = PostItemsList()
             item['author'] = post.xpath('.//td[@class="msgUser"]/a[2]/text()').extract_first()
             if item['author']:
                 item['author_link'] = post.xpath('.//td[@class="msgUser"]/a[2]/@href').extract_first()
+                item['condition'] = condition
                 item['create_date'] = post.xpath('.//td[@class="msgThreadInfo PostThreadInfo"]/text()').extract_first().replace(u'\xa0','').replace(u'Posted','').strip()
-          
-                item['post'] = re.sub('\s+',' '," ".join(post.xpath('.//div[@class="PostMessageBody"]/text()').extract()).replace("\t","").replace("\n","").replace("\r","").replace(u'\xa0',''))
-                item['tag']='epilepsy'
+                item['post'] = self.cleanText(" ".join(post.xpath('.//div[@class="PostMessageBody"]/text()').extract()))
+                # item['tag']='epilepsy'
                 item['topic'] = topic.strip()
                 item['url']=url
                 logging.info(item.__str__)

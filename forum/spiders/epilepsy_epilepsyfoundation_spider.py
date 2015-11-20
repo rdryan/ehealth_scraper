@@ -69,7 +69,7 @@ class ForumsSpider(CrawlSpider):
         # if not item['post']:
         #     item['post'] = re.sub('\s+',' '," ".join(response.xpath('//div[@class="xg_module xg_module_with_dialog"]//div[@class="xg_user_generated"]/text()').extract()).replace("\t","").replace("\n","").replace("\r",""))
 
-        item['tag']=''
+        # item['tag']=''
         item['topic'] = topic
         item['url']=url
         logging.info(item.__str__)
@@ -79,8 +79,8 @@ class ForumsSpider(CrawlSpider):
             item = PostItemsList()
             item['author'] = post.xpath('./dt[@class="byline"]/a[contains(@href,"user")]/text()').extract_first()
             item['author_link'] = post.xpath('./dt[@class="byline"]/a[contains(@href,"user")]/@href').extract_first()
+            item['condition'] = condition
             item['create_date'] = post.xpath('./dt[@class="byline"]/span[@class="timestamp"]/text()').extract_first()
-
             message = post.xpath('.//div[@class="description"]/div[@class="xg_user_generated"]/p/text()').extract()
             if not message:
                 message  = post.xpath('.//div[@class="description"]/div[@class="xg_user_generated"]/text()').extract()
@@ -91,7 +91,7 @@ class ForumsSpider(CrawlSpider):
             # if not item['post']:
             #     item['post'] = re.sub('\s+',' '," ".join(post.xpath('.//div[@class="description"]/div[@class="xg_user_generated"]/text()').extract()).replace("\t","").replace("\n","").replace("\r",""))
 
-            item['tag']='epilepsy'
+            # item['tag']='epilepsy'
             item['topic'] = topic
             item['url']=url
             logging.info(item.__str__)

@@ -4,6 +4,7 @@ from scrapy.contrib.linkextractors import LinkExtractor
 from scrapy.selector import Selector
 from forum.items import PostItemsList
 import re
+from bs4 import BeautifulSoup
 import logging
 
 # from helpers import cleanText
@@ -67,7 +68,7 @@ class ForumsSpider(CrawlSpider):
             item['condition'] = condition
             item['create_date'] = create_date
             item['post'] = message
-            item['tag'] = 'epilepsy'
+            # item['tag'] = 'epilepsy'
             item['topic'] = subject
             item['url'] = url
 

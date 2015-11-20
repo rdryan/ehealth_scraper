@@ -3,6 +3,7 @@ from scrapy.contrib.spiders import CrawlSpider, Rule
 from scrapy.contrib.linkextractors import LinkExtractor
 from scrapy.selector import Selector
 from forum.items import PostItemsList
+from bs4 import BeautifulSoup
 import re
 import logging
 
@@ -35,6 +36,11 @@ class ForumsSpider(CrawlSpider):
                 ), follow=True),
         )
 
+
+    def cleanText(self, str):
+        soup = BeautifulSoup(str, 'html.parser')
+        return re.sub(" +|\n|\r|\t|\0|\x0b|\xa0",' ',soup.get_text()).strip()
+
     # https://github.com/scrapy/dirbot/blob/master/dirbot/spiders/dmoz.py
     # https://github.com/scrapy/dirbot/blob/master/dirbot/pipelines.py
     def parsePostsList(self,response):
@@ -51,9 +57,9 @@ class ForumsSpider(CrawlSpider):
             if item['author']:
                 item['author_link'] = post.xpath('.//div[@class="poster"]/h4/a/@href').extract_first()
                 item['condition'] = condition
-                item['create_date'] = post.xpath('.//div[@class="keyinfo"]/div[@class="smalltext"]/text()').extract()[1].replace(u'\xbb','').strip()
-                item['post'] = re.sub('\s+',' '," ".join(post.xpath('.//div[@class="post"]/div[@class="inner"]/text()').extract()).replace("\t","").replace("\n","").replace("\r",""))
-                item['tag']=''
+                item['create_date'] = self.cleanText(post.xpath('.//div[@class="keyinfo"]/div[@class="smalltext"]/text()').extract()[1])
+                item['post'] = self.cleanText(" ".join(post.xpath('.//div[@class="post"]/div[@class="inner"]/text()').extract()))
+                # item['tag']=''
                 item['topic'] = topic
                 item['url']=url
                 logging.info(item.__str__)

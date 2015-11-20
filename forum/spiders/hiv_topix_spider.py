@@ -56,6 +56,7 @@ class ForumsSpider(CrawlSpider):
             return items
         topic = response.xpath('//div[contains(@class,"str-forum-header")]/h1/text()').extract()[0]
         url = response.url
+        condition = "hiv"
         for post in posts:
             item = PostItemsList()
             if len(post.css('.regsn'))>0:
@@ -66,10 +67,11 @@ class ForumsSpider(CrawlSpider):
                 item['author_link']=''
             else:
                 continue
+            item['condition'] = condition
             item['create_date']= self.parseText(str=post.css('.x-comment-info').extract()[0])
             post_msg= self.parseText(str=post.css('.x-post-content').extract()[0])
             item['post']=post_msg
-            item['tag']='hiv'
+            # item['tag']='hiv'
             item['topic'] = topic
             item['url']=url
             logging.info(post_msg)

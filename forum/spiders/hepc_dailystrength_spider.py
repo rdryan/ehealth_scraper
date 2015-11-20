@@ -4,6 +4,7 @@ from scrapy.contrib.linkextractors import LinkExtractor
 from scrapy.selector import Selector
 from forum.items import PostItemsList
 import re
+from bs4 import BeautifulSoup
 import logging
 
 class ForumsSpider(CrawlSpider):
@@ -26,6 +27,14 @@ class ForumsSpider(CrawlSpider):
                 ), follow=True),
         )
 
+
+    def cleanText(self,text):
+        soup = BeautifulSoup(text,'html.parser')
+        text = soup.get_text();
+        text = re.sub("( +|\n|\r|\t|\0|\x0b|\xa0|\xbb|\xab)+",' ',text).strip()
+        return text 
+
+
     def parsePostsList(self,response):
         sel = Selector(response)
         posts = sel.xpath('//table[@class="reply_table"]/tr')
@@ -39,8 +48,7 @@ class ForumsSpider(CrawlSpider):
         item['author_link'] = response.xpath('.//p[@class="username"]/a/@href').extract_first()
         item['condition'] = condition
         item['create_date'] = response.xpath('.//div[contains(@class, "discussion_text")]/span/text()').extract_first().replace(u'Posted on','').strip()  
-        item['post'] = re.sub('\s+',' '," ".join(response.xpath('.//div[contains(@class, "discussion_text")]/text()').extract()).replace("\t","").replace("\n","").replace("\r","").replace(u'\xa0',''))
-        item['tag']='epilepsy'
+        item['post'] = self.cleanText(" ".join(response.xpath('.//div[contains(@class, "discussion_text")]/text()').extract()))
         item['topic'] = topic.strip()
         item['url']=url
         logging.info(item.__str__)
@@ -54,9 +62,7 @@ class ForumsSpider(CrawlSpider):
                 item['author_link'] = post.xpath('.//p[@class="username"]/a/@href').extract_first()
                 item['condition'] = condition
                 item['create_date'] = post.xpath('.//span[@class="graytext"][2]/text()').extract_first().strip()
-          
-                item['post'] = re.sub('\s+',' '," ".join(post.xpath('.//div[contains(@class, "discussion_text")]/text()').extract()).replace("\t","").replace("\n","").replace("\r","").replace(u'\xa0',''))
-                item['tag']='epilepsy'
+                item['post'] = self.cleanText(" ".join(post.xpath('.//div[contains(@class, "discussion_text")]/text()').extract()))
                 item['topic'] = topic.strip()
                 item['url']=url
                 logging.info(item.__str__)

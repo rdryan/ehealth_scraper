@@ -4,6 +4,7 @@ from scrapy.contrib.linkextractors import LinkExtractor
 from scrapy.selector import Selector
 from forum.items import PostItemsList
 import re
+from bs4 import BeautifulSoup
 import logging
 
 # Spider for crawling Adidas website for shoes
@@ -27,6 +28,12 @@ class ForumsSpider(CrawlSpider):
             #    ), follow=True),
         )
 
+
+    def cleanText(self, str):
+        soup = BeautifulSoup(str, 'html.parser')
+        return re.sub(" +|\n|\r|\t|\0|\x0b|\xa0",' ',soup.get_text()).strip()
+
+
     # https://github.com/scrapy/dirbot/blob/master/dirbot/spiders/dmoz.py
     # https://github.com/scrapy/dirbot/blob/master/dirbot/pipelines.py
     def parsePostsList(self,response):
@@ -42,8 +49,7 @@ class ForumsSpider(CrawlSpider):
             item['author_link'] = ''
             item['condition'] = condition
             item['create_date'] = post.xpath('.//td[@class="frm_post_bar"]/div[@style="float:left"]/text()').extract_first()
-      
-            item['post'] = re.sub('\s+',' '," ".join(post.xpath('.//td[@class="frm_post_message"]//text()').extract()).replace("\t","").replace("\n","").replace("\r",""))
+            item['post'] = self.cleanText(" ".join(post.xpath('.//td[@class="frm_post_message"]//text()').extract()))
             item['tag']=''
             item['topic'] = topic
             item['url']=url

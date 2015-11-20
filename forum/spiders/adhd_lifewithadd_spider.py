@@ -71,7 +71,7 @@ class ForumsSpider(CrawlSpider):
             item['post'] = re.sub('\s+',' '," ".join(post.xpath('.//div[@class="description"]/div[@class="xg_user_generated"]/p/text()').extract()).replace("\t","").replace("\n","").replace("\r",""))
             if not item['post']:
                 item['post'] = re.sub('\s+',' '," ".join(post.xpath('.//div[@class="description"]/div[@class="xg_user_generated"]/text()').extract()).replace("\t","").replace("\n","").replace("\r",""))
-            item['tag']=condition
+            # item['tag']=condition
             item['topic'] = topic
             item['url']=url
             logging.info(item.__str__)

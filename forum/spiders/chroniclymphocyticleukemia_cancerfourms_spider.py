@@ -30,7 +30,7 @@ class CancerForum(CrawlSpider):
         if "threads" in response.url:
             # little trick for allow use only two rules
             items = []
-            condition="breast cancer"
+            condition="chronic lymphocytic leukemia"
             posts = response.xpath('//ol[@id="posts"]/li')
             url = response.url
             subject = response.xpath(

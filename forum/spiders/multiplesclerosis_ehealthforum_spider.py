@@ -54,6 +54,7 @@ class ForumsSpider(CrawlSpider):
         if not posts: return items
         topic = self.cleanText(response.xpath('//*[@id="page_h1"]').extract()[0].encode('ascii'))
         url = response.url
+        condition = "multiple sclerosis"
         for post in posts:
             post_xp = post.xpath('./div[3]/div/div/div[1]')
             if not post_xp: continue
@@ -63,6 +64,7 @@ class ForumsSpider(CrawlSpider):
             item['author'] = self.cleanText(post.xpath('./div[2]/div/span').extract()[0].encode('ascii'))
             item['author_link'] = post.xpath('./div[2]/div/span/a/@href').extract()[0]
             create_date_xp = post.xpath('./div[2]/div[3]/span')
+            item['condition'] = condition
             if create_date_xp:
                 item['create_date'] = self.parseText(str=create_date_xp.extract()[0]).replace('replied ','')
             else:

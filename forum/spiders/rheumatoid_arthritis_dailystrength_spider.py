@@ -55,6 +55,12 @@ class ForumsSpider(CrawlSpider):
             # ), follow=True),
         )
 
+
+    def cleanText(self, str):
+        soup = BeautifulSoup(str, 'html.parser')
+        return re.sub(" +|\n|\r|\t|\0|\x0b|\xa0",' ',soup.get_text()).strip()
+
+
     # https://github.com/scrapy/dirbot/blob/master/dirbot/spiders/dmoz.py
     # https://github.com/scrapy/dirbot/blob/master/dirbot/pipelines.py
     def parsePost(self,response):
@@ -62,18 +68,18 @@ class ForumsSpider(CrawlSpider):
         sel = Selector(response)
         posts = sel.xpath('//*[@id="col1"]/div[2]/div[2]/div[1]/table[4]')
         items = []
+        condition="rheumatoid arthritis"
         topic = sel.xpath('//div[contains(@class, "discussion_topic_header_subject")]/text()').extract()[0]
         url = response.url
         post = sel.xpath('//table[contains(@class, "discussion_topic")]')
         item = PostItemsList()
         item['author'] = post.css('.username').xpath("./a").xpath("text()").extract()[0].strip()
         item['author_link']=response.urljoin(post.css('.username').xpath("./a/@href").extract()[0])
-        item['create_date']= re.sub(" +|\n|\r|\t|\0|\x0b|\xa0",' ',post.css('.discussion_text').xpath('./span/text()').extract()[0]).strip()
-        post_msg=post.css('.discussion_text').extract()[0]
-        soup = BeautifulSoup(post_msg, 'html.parser')
-        post_msg = re.sub(" +|\n|\r|\t|\0|\x0b|\xa0",' ',soup.get_text()).strip()
+        item['condition'] = condition
+        item['create_date']= self.cleanText(' ',post.css('.discussion_text').xpath('./span/text()').extract()[0])
+        post_msg=self.cleanText(post.css('.discussion_text').extract()[0])
         item['post']=post_msg
-        item['tag']='rheumatoid arthritis'
+        # item['tag']='rheumatoid arthritis'
         item['topic'] = topic
         item['url']=url
         logging.info(post_msg)
@@ -85,12 +91,10 @@ class ForumsSpider(CrawlSpider):
                 continue
             item['author'] = post.css('.username').xpath("./a").xpath("text()").extract()[0].strip()
             item['author_link']=response.urljoin(post.css('.username').xpath("./a/@href").extract()[0])
-            item['create_date']= re.sub(" +|\n|\r|\t|\0|\x0b|\xa0",' ',post.xpath('./tr[1]/td[2]/div/table/tr/td/span[2]/text()').extract()[0]).strip()
-            post_msg=post.css('.discussion_text').extract()[0]
-            soup = BeautifulSoup(post_msg, 'html.parser')
-            post_msg = re.sub(" +|\n|\r|\t|\0|\x0b|\xa0",' ',soup.get_text()).strip()
-            item['post']=post_msg
-            item['tag']='rheumatoid arthritis'
+            item['condition'] = condition
+            item['create_date']= self.cleanText(' ',post.xpath('./tr[1]/td[2]/div/table/tr/td/span[2]/text()').extract()[0])
+            item['post']=self.cleanText(post.css('.discussion_text').extract()[0])
+            # item['tag']='rheumatoid arthritis'
             item['topic'] = topic
             item['url']=url
             logging.info(post_msg)

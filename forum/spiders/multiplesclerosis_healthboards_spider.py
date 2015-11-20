@@ -51,6 +51,7 @@ class ForumsSpider(CrawlSpider):
         sel = Selector(response)
         posts = sel.xpath('//*/table[starts-with(@id,"post")]')
         items = []
+        condition = "multiple sclerosis"
         if not posts: return items
         topic = self.cleanText(response.xpath('/html/body/table/tr/td/div[2]/div/div[1]/div[3]/strong').extract()[0])
         url = response.url
@@ -65,9 +66,10 @@ class ForumsSpider(CrawlSpider):
             item = PostItemsList()
             item['author'] = post.xpath('./div[starts-with(@id="postmenu")]').extract()
             item['author_link'] =''
+            item['condition'] = condition
             item['create_date'] = self.parseText(str=post.xpath('./tr/td[1]/text()').extract()[1])
             item['post'] = post_msg
-            item['tag'] = 'multiple-sclerosis'
+            # item['tag'] = 'multiple-sclerosis'
             item['topic'] = topic
             item['url'] = url
             #logging.info(post_msg)

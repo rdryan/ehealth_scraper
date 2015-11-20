@@ -4,6 +4,7 @@ from scrapy.contrib.linkextractors import LinkExtractor
 from scrapy.selector import Selector
 from forum.items import PostItemsList
 import re
+from bs4 import BeautifulSoup
 import logging
 
 class ForumsSpider(CrawlSpider):
@@ -26,6 +27,14 @@ class ForumsSpider(CrawlSpider):
                 ), follow=True),
         )
 
+
+    def cleanText(self,text):
+        soup = BeautifulSoup(text,'html.parser')
+        text = soup.get_text();
+        text = re.sub("( +|\n|\r|\t|\0|\x0b|\xa0|\xbb|\xab)+",' ',text).strip()
+        return text 
+
+
     def parsePostsList(self,response):
         sel = Selector(response)
         posts = sel.xpath('//table[@class="post"]')
@@ -41,11 +50,9 @@ class ForumsSpider(CrawlSpider):
                 item['author_link'] = ''
                 item['condition'] = condition
                 item['create_date'] = post.xpath('.//span[@class="postdate"]/text()').extract_first().replace(u'Posted:','').strip()
-          
-                item['post'] = re.sub('\s+',' '," ".join(post.xpath('.//div[@class="postbody"]/text()').extract()).replace("\t","").replace("\n","").replace("\r","").replace(u'\xa0',''))
-                item['tag']=''
+                item['post'] = self.cleanText(" ".join(post.xpath('.//div[@class="postbody"]/text()').extract()))
+                # item['tag']=''
                 item['topic'] = topic.strip()
                 item['url']=url
-                logging.info(item.__str__)
                 items.append(item)
         return items

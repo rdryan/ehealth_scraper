@@ -31,7 +31,7 @@ class EpilepsyCancercompassSpiderSpider(CrawlSpider):
         items = []
         if 'all' in response.url:
             url = response.url
-            condition="Lymphoma"
+            condition="lymphoma"
             subject = response.xpath(
                 '//div[@class="contentText"]/h1/text()').extract()[0]
             posts = response.xpath('//div[@class="mbpost"]')
@@ -66,7 +66,7 @@ class EpilepsyCancercompassSpiderSpider(CrawlSpider):
                 item['condition'] = condition
                 item['create_date'] = create_date
                 item['post'] = message
-                item['tag'] = 'Lymphoma'
+                # item['tag'] = 'Lymphoma'
                 item['topic'] = subject
                 item['url'] = url
                 items.append(item)

@@ -4,6 +4,7 @@ from scrapy.contrib.linkextractors import LinkExtractor
 from scrapy.selector import Selector
 from forum.items import PostItemsList
 import re
+from bs4 import BeautifulSoup
 import logging
 
 ## LOGGING to file
@@ -54,7 +55,7 @@ class ForumsSpider(CrawlSpider):
             item['create_date'] = p.sub('',item['create_date']).strip()
 
             item['post'] = re.sub('\s+',' '," ".join(post.xpath('.//div[contains(@id,"post_message")]/text()').extract()).replace("\t","").replace("\n","").replace("\r",""))
-            item['tag']=''
+            # item['tag']=''
             item['topic'] = topic
             item['url']=url
             logging.info(item.__str__)

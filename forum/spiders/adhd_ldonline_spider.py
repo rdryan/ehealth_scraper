@@ -75,7 +75,7 @@ class ForumsSpider(CrawlSpider):
             item['condition'] = condition
             item['create_date'] = create_date
             item['post'] = self.cleanText(message)
-            item['tag'] = ''
+            # item['tag'] = ''
             item['topic'] = subject
             item['url'] = url
 

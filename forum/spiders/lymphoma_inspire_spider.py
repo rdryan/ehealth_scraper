@@ -4,6 +4,7 @@ from scrapy.contrib.linkextractors import LinkExtractor
 from scrapy.selector import Selector
 from forum.items import PostItemsList
 import re
+from bs4 import BeautifulSoup
 import logging
 
 # Spider for crawling Adidas website for shoes
@@ -26,6 +27,15 @@ class ForumsSpider(CrawlSpider):
                     restrict_xpaths='//ul[@class="search-results-nav"]/li[last()-1]/a'
                 ), follow=True),
         )
+
+
+
+    def cleanText(self,text):
+        soup = BeautifulSoup(text,'html.parser')
+        text = soup.get_text();
+        text = re.sub("( +|\n|\r|\t|\0|\x0b|\xa0|\xbb|\xab)+",' ',text).strip()
+        return text 
+
 
     # https://github.com/scrapy/dirbot/blob/master/dirbot/spiders/dmoz.py
     # https://github.com/scrapy/dirbot/blob/master/dirbot/pipelines.py
@@ -58,8 +68,8 @@ class ForumsSpider(CrawlSpider):
                 item['author_link'] = post.xpath('./div[@class="post-info"]//li[@class="by"][1]/a/@href').extract_first()
                 item['condition'] = condition
                 item['create_date'] = post.xpath('./div[@class="post-info"]//li[@class="by"][3]/text()').extract_first()
-                item['post'] = re.sub('\s+',' '," ".join(post.xpath('./p/text()').extract()).replace("\t","").replace("\n","").replace("\r",""))
-                item['tag']=''
+                item['post'] = self.cleanText(" ".join(post.xpath('./p/text()').extract()))
+                # item['tag']=''
                 item['topic'] = topic
                 item['url']=url
                 logging.info(item.__str__)

@@ -63,7 +63,7 @@ class ForumsSpider(CrawlSpider):
             message = post.css('.vt_post_body').xpath('text()').extract()
             item['post'] = self.cleanText(message)
             # item['post'] = re.sub('\s+',' '," ".join(post.css('.vt_post_body').xpath('text()').extract()).replace("\t","").replace("\n","").replace("\r",""))
-            item['tag']=''
+            # item['tag']=''
             item['topic'] = topic
             item['url']=url
             logging.info(item.__str__)

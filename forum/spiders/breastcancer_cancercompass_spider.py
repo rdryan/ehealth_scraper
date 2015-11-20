@@ -65,7 +65,7 @@ class EpilepsyCancercompassSpiderSpider(CrawlSpider):
                 item['condition'] = condition
                 item['create_date'] = create_date
                 item['post'] = message
-                item['tag'] = 'epilepsy'
+                # item['tag'] = 'epilepsy'
                 item['topic'] = subject
                 item['url'] = url
                 items.append(item)

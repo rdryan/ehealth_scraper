@@ -47,6 +47,8 @@ class ForumsSpider(CrawlSpider):
             ), callback='parsePost', follow=True),
         )
 
+
+
     # https://github.com/scrapy/dirbot/blob/master/dirbot/spiders/dmoz.py
     # https://github.com/scrapy/dirbot/blob/master/dirbot/pipelines.py
     def parsePost(self,response):
@@ -54,6 +56,7 @@ class ForumsSpider(CrawlSpider):
         sel = Selector(response)
         posts = sel.css(".messageList").xpath('./li')
         items = []
+        condition = 'rheumatoid arthritis'
         if len(posts)==0:
             return items
         topic = sel.css('.titleBar').xpath('./h1/text()').extract()[0].strip()
@@ -68,7 +71,7 @@ class ForumsSpider(CrawlSpider):
             item['create_date']= self.parseText(str=post.css('.DateTime').extract()[0])
             post_msg= self.parseText(str=post.css('.messageText').extract()[0])
             item['post']=post_msg
-            item['tag']='rheumatoid arthritis'
+            # item['tag']='rheumatoid arthritis'
             item['topic'] = topic
             item['url']=url
             logging.info(post_msg)

@@ -70,7 +70,7 @@ class ForumsSpider(CrawlSpider):
            
             message = ''.join(post.xpath('.//div[@class="postbody"]/text()').extract())
             item['post'] = self.cleanText(message)
-            item['tag']='breastcancer'
+            # item['tag']='breastcancer'
             item['topic'] = topic
             item['url']=url
             items.append(item)

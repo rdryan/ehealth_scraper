@@ -54,7 +54,7 @@ class HealthUnlocked(scrapy.Spider):
 			yield scrapy.Request(url,callback=self.get_sub_data)
 
 	def get_sub_data(self,response):
-
+		condition ="chronic lymphocytic leukemia"
 		response_url = str(response.url)
 		response_data_splitted = response_url.split("/")
 		post_id = response_data_splitted[5]
@@ -78,7 +78,7 @@ class HealthUnlocked(scrapy.Spider):
 		item = PostItemsList()
 		item['author'] = author_username
 		item['author_link'] = author_link
-		item['condition']="chronic lymphocytic leukemia"
+		item['condition']=condition
 		item['create_date'] = posted_date
 		item['post'] = author_all_text
 		item['topic'] = topic

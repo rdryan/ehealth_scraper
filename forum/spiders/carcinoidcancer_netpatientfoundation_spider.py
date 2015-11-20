@@ -65,7 +65,7 @@ class ForumsSpider(CrawlSpider):
         logging.info(response)
         sel = Selector(response)
         posts = sel.xpath("//*[@id=\"allMsgs\"]").css(".forumsmb")
-        condition="Carcinoid Cancer"
+        condition="carcinoid cancer"
         items = []
         topic = response.xpath('//h1[contains(@class, "headingTitle")]/text()').extract()[0]
         url = response.url
@@ -79,7 +79,7 @@ class ForumsSpider(CrawlSpider):
             # soup = BeautifulSoup(post_msg, 'html.parser')
             # post_msg = re.sub(" +|\n|\r|\t|\0|\x0b|\xa0",' ',soup.get_text()).strip()
             item['post']=self.cleanText(post_msg)
-            item['tag']=condition
+            # item['tag']=condition
             item['topic'] = topic
             item['url']=url
             logging.info(post_msg)

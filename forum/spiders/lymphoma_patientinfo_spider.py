@@ -4,6 +4,7 @@ from scrapy.contrib.linkextractors import LinkExtractor
 from scrapy.selector import Selector
 from forum.items import PostItemsList
 import re
+from bs4 import BeautifulSoup
 import logging
 
 ## LOGGING to file
@@ -37,37 +38,39 @@ class ForumsSpider(CrawlSpider):
                 ), follow=True),
         )
 
-    # https://github.com/scrapy/dirbot/blob/master/dirbot/spiders/dmoz.py
-    # https://github.com/scrapy/dirbot/blob/master/dirbot/pipelines.py
+    def cleanText(self,text):
+        soup = BeautifulSoup(text,'html.parser')
+        text = soup.get_text();
+        text = re.sub("( +|\n|\r|\t|\0|\x0b|\xa0|\xbb|\xab)+",' ',text).strip()
+        return text 
+
     def parsePostsList(self,response):
         sel = Selector(response)
         posts = sel.xpath('//div[@id="topic-replies"]//article[contains(@class,"post")]')
         items = []
         topic = response.xpath('//h1[@class="title"]/text()').extract_first()
         url = response.url
-        
+        condition = "lymphoma"
         item = PostItemsList()
         item['author'] = response.xpath('//div[@id="topic"]/div[@class="avatar"]/a/p/strong[1]/text()').extract_first()
         item['author_link'] = response.xpath('//div[@id="topic"]/div[@class="avatar"]/a/@href').extract_first()
-        item['condition']=topic
+        item['condition']=condition
         item['create_date'] = response.xpath('//div[@id="topic"]//article//time/@datetime').extract_first().strip()
         item['post'] = re.sub('\s+',' '," ".join(response.xpath('//div[@id="topic"]//div[@class="post-content break-word"]/p/text()').extract()).replace("\t","").replace("\n","").replace("\r",""))
-        item['tag']=''
+        # item['tag']=''
         item['topic'] = topic
         item['url']=url
-        logging.info(item.__str__)
         items.append(item)
         
         for post in posts:
             item = PostItemsList()
             item['author'] = post.xpath('./span[@class="post-username"]/a/text()').extract_first()
             item['author_link'] = post.xpath('./span[@class="post-username"]/a/@href').extract_first()
-            item['condition']=topic
+            item['condition']=condition
             item['create_date'] = post.xpath('.//time/@datetime').extract_first()
-            item['post'] = re.sub('\s+',' '," ".join(post.xpath('./div[@class="post-content break-word"]/p/text()').extract()).replace("\t","").replace("\n","").replace("\r",""))
-            item['tag']=''
+            item['post'] = self.cleanText(" ".join(post.xpath('./div[@class="post-content break-word"]/p/text()').extract()))
+            # item['tag']=''
             item['topic'] = topic
             item['url']=url
-            logging.info(item.__str__)
             items.append(item)
         return items

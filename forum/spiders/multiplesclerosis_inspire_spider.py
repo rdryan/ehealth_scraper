@@ -48,15 +48,17 @@ class ForumsSpider(CrawlSpider):
         items = []
         topic = self.cleanText(response.xpath('//*[@class="post-title"]').extract()[0].encode('ascii'))
         url = response.url
+        condition = "multiple sclerosis"
 
         #start message
         item = PostItemsList()
         post_info = sel.xpath('//*/div[@class="post-info"]')
         item['author'] = self.cleanText(post_info.xpath('//*/li[@class="by"]/a').extract()[0])
         item['author_link'] = post_info.xpath('//*/li[@class="by"]/a/@href').extract()[0]
+        item['condition'] = condition
         item['create_date'] = self.cleanText(post_info.xpath('//*/ul/li[@class="by"]').extract()[0]).split(u'\xb7')[1].strip()
         item['post'] = post_info.xpath('//*[@class="post-body"]').extract()[0]
-        item['tag'] = 'multiple-sclerosis'
+        # item['tag'] = 'multiple-sclerosis'
         item['topic'] = topic
         item['url'] = url
         items.append(item)
@@ -71,9 +73,10 @@ class ForumsSpider(CrawlSpider):
             item = PostItemsList()
             item['author'] = self.cleanText(post.xpath('./div/ul/li[1]/a').extract()[0])
             item['author_link'] = post.xpath('./div/ul/li[1]/a/@href').extract()[0]
+            item['condition'] = condition
             item['create_date'] = self.cleanText(post.xpath('./div/ul/li[3]').extract()[0])
             item['post'] = post_msg
-            item['tag'] = 'multiple-sclerosis'
+            # item['tag'] = 'multiple-sclerosis'
             item['topic'] = topic
             item['url'] = url
             #logging.info(post_msg)

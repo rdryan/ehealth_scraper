@@ -57,25 +57,19 @@ class ForumsSpider(CrawlSpider):
 
         for post in posts:
             item = PostItemsList()
-            author = post.xpath(
-                './/div[contains(@id, "postmenu")]/text()').extract()[0]
+            author = post.xpath( './/div[contains(@id, "postmenu")]/text()').extract()[0]
             author = author.strip()
             author_link = "*"
-            create_date = post.xpath(
-                './/td[@class="thead"]//text()'
-            ).extract()[1].strip()
+            create_date = post.xpath( './/td[@class="thead"]//text()' ).extract()[1].strip()
 
-            message = ''.join(post.xpath(
-                './/div[contains(@id, "post_message_")]//text()'
-            ).extract())
-            message = self.cleanText(message)
+            message = self.cleanText(''.join(post.xpath( './/div[contains(@id, "post_message_")]//text()' ).extract()))
 
             item['author'] = author
             item['author_link'] = author_link
             item['condition'] = condition
             item['create_date'] = create_date
             item['post'] = message
-            item['tag'] = ''
+            # item['tag'] = ''
             item['topic'] = subject
             item['url'] = url
 

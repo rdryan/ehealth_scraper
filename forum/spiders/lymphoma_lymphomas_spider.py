@@ -42,14 +42,14 @@ class LymphomasSpider(scrapy.Spider):
 		author_link_xpath = "//div[@id='content']/div[3]//span[@class='username']/@about"
 		author_date_posted_xpath = "//div[@id='content']/div[3]/div[1]/div[1]/span/text()"
 		author_text_xpath = "//div[@id='content']/div[3]//div[@class='field-items']//p/text()"
-
+		condition = "lymphoma"
 		author_link = "https://www.lymphomas.org.uk%s"%response.xpath(author_link_xpath).extract()[0]
 		topic = response.xpath('//*[@id="content"]/h1/text()').extract()[0]
 
 		item = PostItemsList()
 		item['author'] = response.xpath(author_name_xpath).extract()[0]
 		item['author_link'] = author_link
-		item['condition']="lymphoma"
+		item['condition']=condition
 		item['create_date'] = response.xpath(author_date_posted_xpath).extract()[0]
 		item['post'] = self.cleanText(" ".join(response.xpath(author_text_xpath).extract()))
 		item['topic'] = topic

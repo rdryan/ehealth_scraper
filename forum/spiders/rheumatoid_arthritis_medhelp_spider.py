@@ -54,7 +54,7 @@ class ForumsSpider(CrawlSpider):
             return items
         topic = sel.css('.question_title').xpath('./text()').extract()[0].strip()
         url = response.url
-
+        condition = 'rheumatoid arthritis'
         item = PostItemsList()
         post=sel.xpath('//*[@id="post_question_header"]')
         item['author'] = self.parseText(str=post.css('.post_byline').xpath('./a').extract()[0].strip())
@@ -62,7 +62,7 @@ class ForumsSpider(CrawlSpider):
         item['create_date'] = self.parseText(post.css('.post_byline').xpath('./span[3]/text()').extract()[0])
         post_msg=self.parseText(str=post.css('.post_message_container').xpath('./div[1]').extract()[0])
         item['post']=post_msg
-        item['tag']='rheumatoid arthritis'
+        # item['tag']='rheumatoid arthritis'
         item['topic'] = topic
         item['url']=url
         logging.info(post_msg)
@@ -77,7 +77,7 @@ class ForumsSpider(CrawlSpider):
             item['create_date'] = self.parseText(post.css('.post_byline').xpath('./span[3]/text()').extract()[0])
             post_msg=self.parseText(str=post.css('.post_message_container').xpath('./div[1]').extract()[0])
             item['post']=post_msg
-            item['tag']='rheumatoid arthritis'
+            # item['tag']='rheumatoid arthritis'
             item['topic'] = topic
             item['url']=url
             logging.info(post_msg)

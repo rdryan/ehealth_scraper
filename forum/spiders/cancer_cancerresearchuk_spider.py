@@ -4,6 +4,7 @@ from scrapy.contrib.linkextractors import LinkExtractor
 from scrapy.selector import Selector
 from forum.items import PostItemsList
 import re
+from bs4 import BeautifulSoup
 import logging
 
 # Spider for crawling Adidas website for shoes
@@ -46,7 +47,7 @@ class ForumsSpider(CrawlSpider):
                 item['create_date'] = post.xpath('.//span[@class="post-is-reply-to"]/text()').extract_first().replace('in response to','').strip()
 
             item['post'] = re.sub('\s+',' '," ".join(post.xpath('.//div[@class="field-item even"]/p/text()').extract()).replace("\t","").replace("\n","").replace("\r","").replace(u'\xa0',''))
-            item['tag']=''
+            # item['tag']=''
             item['topic'] = topic
             item['url']=url
             logging.info(item.__str__)

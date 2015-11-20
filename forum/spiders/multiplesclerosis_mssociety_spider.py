@@ -35,20 +35,6 @@ class ForumsSpider(Spider):
     ]
 
     driver = webdriver.PhantomJS()
-    # driver = webdriver.Chrome('G:\\tools\\chromedriver.exe')
-    # rules = (
-    #         # Rule to go to the single product pages and run the parsing function
-    #         # Excludes links that end in _W.html or _M.html, because they point to
-    #         # configuration pages that aren't scrapeable (and are mostly redundant anyway)
-    #         Rule(LinkExtractor(
-    #             restrict_xpaths='//*[@id="forum-topic-list"]/table[2]/tr/td[2]/a',
-    #             canonicalize=True,
-    #             ), callback='parsePost', follow=True),
-    #         # Rule to follow arrow to next product grid
-    #         # Rule(LinkExtractor(
-    #         #     restrict_xpaths="//ul[contains(@class, 'pager')]",
-    #         # ), callback='parsePost', follow=True),
-    #     )
 
     def parse(self, response):
         self.driver.get(response.url)
@@ -63,10 +49,6 @@ class ForumsSpider(Spider):
 
         if len(requestList)>0:
             return requestList
-        # el = Selector(text=self.driver.page_source).xpath("//ul[contains(@class, 'pager')]/li/a/@href")
-        # if len(el.extract())>0:
-        #     req = Request(el.extract()[0])
-        #     return req
         self.driver.close()
 
 
@@ -80,7 +62,7 @@ class ForumsSpider(Spider):
         comment = sel.xpath('//*[@id="forum-comments"]')
         topic = sel.xpath('//div[contains(@class, "forum-post")]')[0].xpath('.//div[contains(@class, "forum-post-title")]/text()').extract()[0].strip()
         url = response.url
-
+        condition = "multiple sclerosis"
         post = sel.xpath('//div[contains(@class, "forum-post")]')[0]
         item = PostItemsList()
         if len(post.css('.author-name').xpath('./a/text()'))>0:
@@ -89,10 +71,11 @@ class ForumsSpider(Spider):
         else:
             item['author']=''
             item['author_link']=''
+        item['condition'] = condition
         item['create_date']= self.parseText(str=post.xpath('./div[1]/div').extract()[0])
         post_msg= self.parseText(str=post.css('.forum-post-content').extract()[0])
         item['post']=post_msg
-        item['tag']='Multiple Sclerosis'
+        # item['tag']='Multiple Sclerosis'
         item['topic'] = topic
         item['url']=url
         logging.info(post_msg)
@@ -113,10 +96,11 @@ class ForumsSpider(Spider):
                     item['author_link']=''
             else:
                 continue
+            item['condition'] = condition
             item['create_date']= self.parseText(str=post.xpath('./div[1]/div').extract()[0])
             post_msg= self.parseText(str=post.css('.forum-post-content').extract()[0])
             item['post']=post_msg
-            item['tag']='Multiple Sclerosis'
+            # item['tag']='Multiple Sclerosis'
             item['topic'] = topic
             item['url']=url
             logging.info(post_msg)

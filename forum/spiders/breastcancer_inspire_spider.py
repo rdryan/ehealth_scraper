@@ -133,7 +133,7 @@ class ForumsSpider(CrawlSpider):
             item['create_date'] = self.parseText(str=post.css('.post-info').xpath('./ul/li[3]').extract()[0])
             post_msg=self.parseText(str=post.xpath('./p').extract()[0])
             item['post']=post_msg
-            item['tag']=''
+            # item['tag']=''
             item['topic'] = topic
             item['url']=url
             logging.info(post_msg)

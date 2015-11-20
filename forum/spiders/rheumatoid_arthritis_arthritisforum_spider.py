@@ -52,12 +52,14 @@ class ForumsSpider(CrawlSpider):
         items = []
         if len(posts)==0:
             return items
+        condition ="renal cell carcinoma"
         topic = response.xpath('/html/body/center/table[4]/tr/td/table[2]/tr[1]/td[2]/p[1]/text()[2]').extract()[0].strip()
         url = response.url
         for post in posts:
             item = PostItemsList()
             item['author'] = post.xpath("./td[1]/text()").extract()[3]
             item['author_link']=''
+            item['condition'] = condition
             item['create_date']= self.parseText(str=post.xpath('./td[1]/text()').extract()[1])
             post_msg= self.parseText(str=post.xpath("./td[2]/p[2]").extract()[0])
             item['post']=post_msg
@@ -71,3 +73,4 @@ class ForumsSpider(CrawlSpider):
     def parseText(self, str):
         soup = BeautifulSoup(str, 'html.parser')
         return re.sub(" +|\n|\r|\t|\0|\x0b|\xa0",' ',soup.get_text()).strip()
+        

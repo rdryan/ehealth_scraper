@@ -44,7 +44,7 @@ class ForumsSpider(CrawlSpider):
     def topic_parse(self, response):
         if 'discussions' not in response.url:
             items = []
-            condition = "Lymphoma"
+            condition = "lymphoma"
             subject = response.xpath(
                 '//div[@class="forum-stats-container"]/h1/text()').extract()[0]
             subject = subject.strip()
@@ -72,7 +72,7 @@ class ForumsSpider(CrawlSpider):
                 item['condition'] = condition
                 item['create_date'] = create_date
                 item['post'] = message
-                item['tag'] = 'Lymphoma'
+                # item['tag'] = 'Lymphoma'
                 item['topic'] = subject
                 item['url'] = url
 

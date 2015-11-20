@@ -32,7 +32,7 @@ class CancerCompass(scrapy.Spider):
 		author_link_xpath  = "//div[@class='mbpost'][1]//div[@class='author']/p/a/@href"
 		publish_date_xpath = "//div[@class='mbpost'][1]//div[@class='message']/div[@class='header']/p/text()" #remove "By" and "on"
 		post_text_xpath    = "//div[@class='mbpost'][1]//div[@class='message']/div[@class='msgContent']/p/text()" 
-
+		condition ="chronic lymphocytic leukemia"
 		author_name = response.xpath(author_name_xpath).extract()[0]
 
 		author_link = response.xpath(author_link_xpath).extract()
@@ -53,7 +53,7 @@ class CancerCompass(scrapy.Spider):
 
 		item['author'] = response.xpath(author_name_xpath).extract()
 		item['author_link'] = author_link
-		item['condition']="chronic lymphocytic leukemia"
+		item['condition']=condition
 		item['create_date'] = publish_date
 		item['post'] = post_text
 		item['topic'] = self.cleanText(topic)
