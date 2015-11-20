@@ -17,10 +17,11 @@ import logging
 
 # Spider for crawling Adidas website for shoes
 class ForumsSpider(CrawlSpider):
-    name = "adhd_totallyaddconnect_spider"
-    allowed_domains = ["totallyaddconnect.com"]
+    name = "adhd_additudemag_spider"
+    allowed_domains = ["additudemag.com"]
     start_urls = [
-        "http://www.totallyaddconnect.com/forums",
+#        "http://connect.additudemag.com/forums/",
+        "http://connect.additudemag.com/forums/viewforum/109/",
     ]
 
     rules = (
@@ -28,27 +29,20 @@ class ForumsSpider(CrawlSpider):
             # Excludes links that end in _W.html or _M.html, because they point to 
             # configuration pages that aren't scrapeable (and are mostly redundant anyway)
             Rule(LinkExtractor(
-                    restrict_xpaths='//td[@class="bbp-topic-title"]',
+                    restrict_xpaths='//div[@class="topicTitle"]',
                     canonicalize=True,
                 ), callback='parsePostsList'),
             # Rule to follow arrow to next product grid
             Rule(LinkExtractor(
-                    restrict_xpaths='//td[@class="bbp-forum-info"]',
+                    restrict_xpaths='//div[@class="forumName"]/a',
                     canonicalize=True,
                     deny=(r'user_profile_*\.html',)
                 ), follow=True),
             Rule(LinkExtractor(
-                    restrict_xpaths='//td[@class="bbp-forum-title"]',
+                    restrict_xpaths='//div[@class="paginate"]/a',
                     canonicalize=True,
                     deny=(r'user_profile_*\.html',)
                 ), follow=True),
-            Rule(LinkExtractor(
-                    restrict_xpaths='//a[@class="page-numbers"]',
-                    canonicalize=True,
-                    deny=(r'user_profile_*\.html',)
-                ), follow=True),
-
-
         )
 
     def cleanText(self,text):
@@ -62,37 +56,20 @@ class ForumsSpider(CrawlSpider):
     def parsePostsList(self,response):
         sel = Selector(response)
         #posts = sel.css(".vt_post_holder")
-        posts = sel.xpath('//table[@class="bbp-replies"]')
+        posts = sel.xpath('//table[@class="threadBorder"]')
         items = []
-        topic = ''.join(sel.xpath('//h1[@class="entry-title"]/text()').extract()).strip()
+        topic = ''.join(sel.xpath('//div[@class="tableHeading"]/text()').extract())
         url = response.url
         condition="adhd"
-            
-        item = PostItemsList()
-        item['author'] = sel.xpath('//table[@class="bbp-topic"]//a[@class="bbp-author-name"]/text()').extract_first()
-        item['author_link'] = sel.xpath('//table[@class="bbp-topic"]//a[@class="bbp-author-name"]/@href').extract_first()
-        item['condition'] = condition
-        #create_date = ''.join(sel.xpath('//span[@class="post-meta"]/text()').extract()).replace("Posted by","").replace("to","")
-        create_date = ''.join(sel.xpath('//table[@class="bbp-topic"]//tr[@class="bbp-topic-header"]//text()').extract()).strip()
-        item['create_date']= self.cleanText(create_date)
-        
-        message = ''.join(sel.xpath('//td[@class="bbp-topic-content"]//text()').extract())
-        item['post'] = self.cleanText(message)
-        item['tag']='adhd'
-        item['topic'] = topic
-        item['url']=url
-        logging.info(item.__str__)
-        items.append(item)
-
         for post in posts:
             item = PostItemsList()
-            item['author'] = post.xpath('.//a[@class="bbp-author-name"]/text()').extract_first()
-            item['author_link'] = post.xpath('.//a[@class="bbp-author-name"]/@href').extract_first()
+            item['author'] = post.xpath('.//div[@class="largeLinks"]/a/text()').extract()
+            item['author_link'] = post.xpath('.//div[@class="largeLinks"]/a/@href').extract()
             item['condition'] = condition
-            create_date = ''.join(post.xpath('.//tr[@class="bbp-reply-header"]//text()').extract()).strip()
-            item['create_date']= self.cleanText(create_date)
+            create_date = ''.join(post.xpath('.//td[@class="tableRowHeading"]//text()').extract())
+            item['create_date']= self.cleanText(create_date) 
             
-            message = ''.join(post.xpath('.//td[@class="bbp-reply-content"]//text()').extract())
+            message = ''.join(post.xpath('.//div[@class="post"]//text()').extract())
             item['post'] = self.cleanText(message)
             item['tag']='adhd'
             item['topic'] = topic
