@@ -5,7 +5,7 @@ from scrapy.spiders import CrawlSpider, Rule
 import re
 from bs4 import BeautifulSoup
 from forum.items import PostItemsList
-
+import string
 
 class EpilepsyCancerSpiderSpider(CrawlSpider):
     name = 'breastcancer_cancerorg_spider'

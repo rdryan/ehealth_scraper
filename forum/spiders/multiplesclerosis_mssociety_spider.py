@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import scrapy
 from scrapy.contrib.spiders import Spider, Request, Rule
 from scrapy.contrib.linkextractors import LinkExtractor
@@ -7,6 +8,7 @@ import re
 import logging
 from bs4 import BeautifulSoup
 from selenium import webdriver
+import string
 # import lxml.html
 # from lxml.etree import ParserError
 # from lxml.cssselect import CSSSelector

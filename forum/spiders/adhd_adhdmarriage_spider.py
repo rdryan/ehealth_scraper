@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import scrapy
 from scrapy.contrib.spiders import CrawlSpider, Rule
 from scrapy.contrib.linkextractors import LinkExtractor
@@ -6,7 +7,7 @@ from forum.items import PostItemsList
 import re
 from bs4 import BeautifulSoup
 import logging
-
+import string
 ## LOGGING to file
 #import logging
 #from scrapy.log import ScrapyFileLogObserver
@@ -46,11 +47,13 @@ class ForumsSpider(CrawlSpider):
 
         )
 
-    def cleanText(self,text):
+    def cleanText(self,text,printableOnly=True):
         soup = BeautifulSoup(text,'html.parser')
         text = soup.get_text();
         text = re.sub("( +|\n|\r|\t|\0|\x0b|\xa0|\xbb|\xab)+",' ',text).strip()
-        return text 
+        if printableOnly:
+            return filter(lambda x: x in string.printable, text)
+        return text
 
     # https://github.com/scrapy/dirbot/blob/master/dirbot/spiders/dmoz.py
     # https://github.com/scrapy/dirbot/blob/master/dirbot/pipelines.py

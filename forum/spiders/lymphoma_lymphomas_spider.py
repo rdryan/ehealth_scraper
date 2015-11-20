@@ -1,8 +1,10 @@
+# -*- coding: utf-8 -*-
 import scrapy
 from forum.items import PostItemsList
 import time
 from bs4 import BeautifulSoup
 import re
+import string
 
 class LymphomasSpider(scrapy.Spider):
 	name = "lymphoma_lymphomas_spider"

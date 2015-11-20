@@ -8,7 +8,7 @@ from forum.items import PostItemsList
 import re
 import logging
 from bs4 import BeautifulSoup
-
+import string
 ## LOGGING to file
 #import logging
 #from scrapy.log import ScrapyFileLogObserver

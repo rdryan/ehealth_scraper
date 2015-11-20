@@ -5,6 +5,7 @@ from forum.items import PostItemsList
 import logging
 import re
 from bs4 import BeautifulSoup
+import string
 
 class CancerForum(CrawlSpider):
     name = 'breastcancer_cancerforums_spider'

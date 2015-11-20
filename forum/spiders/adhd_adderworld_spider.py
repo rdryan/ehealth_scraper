@@ -1,3 +1,9 @@
+# -*- coding: utf-8 -*-
+
+# Define here the models for your scraped items
+#
+# See documentation in:
+# http://doc.scrapy.org/en/latest/topics/items.html
 import scrapy
 from scrapy.contrib.spiders import CrawlSpider, Rule
 from scrapy.contrib.linkextractors import LinkExtractor
@@ -11,6 +17,7 @@ from lxml.cssselect import CSSSelector
 import re
 from bs4 import BeautifulSoup
 import urlparse
+import string
 
 ## LOGGING to file
 #import logging
@@ -53,11 +60,13 @@ class ForumsSpider(CrawlSpider):
         urlcomponents.query = newparams
         return urlparse.urlunparse(urlcomponents)
 
-    def cleanText(self,text):
+    def cleanText(self,text,printableOnly=True):
         soup = BeautifulSoup(text,'html.parser')
         text = soup.get_text();
         text = re.sub("( +|\n|\r|\t|\0|\x0b|\xa0|\xbb|\xab)+",' ',text).strip()
-        return text 
+        if printableOnly:
+            return filter(lambda x: x in string.printable, text)
+        return text
 
     # https://github.com/scrapy/dirbot/blob/master/dirbot/spiders/dmoz.py
     # https://github.com/scrapy/dirbot/blob/master/dirbot/pipelines.py
@@ -79,13 +88,11 @@ class ForumsSpider(CrawlSpider):
         item['author'] = response.xpath('//div[@class="xg_module xg_module_with_dialog"]//ul[@class="navigation byline"]/li/a[contains(@href,"profile")]/text()').extract_first()
         item['author_link'] = response.xpath('//div[@class="xg_module xg_module_with_dialog"]//ul[@class="navigation byline"]/li/a[contains(@href,"profile")]/@href').extract_first()
         item['condition']=condition
-        item['create_date'] = response.xpath('//div[@class="xg_module xg_module_with_dialog"]//ul[@class="navigation byline"]/li/a[@class="nolink"][2]/text()').extract_first().replace('on','').replace('in','').strip()
+        item['create_date'] = self.cleanText(response.xpath('//div[@class="xg_module xg_module_with_dialog"]//ul[@class="navigation byline"]/li/a[@class="nolink"][2]/text()').extract_first().replace('on','').replace('in','').replace('at',','),False)
         item['post'] = re.sub('\s+',' '," ".join(response.xpath('//div[@class="xg_module xg_module_with_dialog"]//div[@class="xg_user_generated"]/p/text()').extract()).replace("\t","").replace("\n","").replace("\r",""))
-        item['tag']='epilepsy'
+        # item['tag']='epilepsy'
         item['topic'] = topic
         item['url']=url
-
-        logging.info(item.__str__)
         items.append(item)
         
         for post in posts:
@@ -93,11 +100,10 @@ class ForumsSpider(CrawlSpider):
             item['author'] = post.xpath('./dt[@class="byline"]/a[contains(@href,"user")]/text()').extract_first()
             item['author_link'] = post.xpath('./dt[@class="byline"]/a[contains(@href,"user")]/@href').extract_first()
             item['condition']=condition
-            item['create_date'] = post.xpath('./dt[@class="byline"]/span[@class="timestamp"]/text()').extract_first()
+            item['create_date'] = self.cleanText(post.xpath('./dt[@class="byline"]/span[@class="timestamp"]/text()').extract_first().replace('at',','),False)
             item['post'] = re.sub('\s+',' '," ".join(post.xpath('.//div[@class="description"]/div[@class="xg_user_generated"]/p/text()').extract()).replace("\t","").replace("\n","").replace("\r",""))
             # item['tag']=''
             item['topic'] = topic
             item['url']=url
-            logging.info(item.__str__)
             items.append(item)
         return items

@@ -80,6 +80,8 @@ from forum.items import PostItemsList
 import re
 import logging
 from bs4 import BeautifulSoup
+import string
+
 class ForumsSpider(CrawlSpider):
     name = "breastcancer_inspire_spider"
     allowed_domains = ["inspire.com"]

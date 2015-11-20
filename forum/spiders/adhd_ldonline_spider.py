@@ -1,9 +1,11 @@
+# -*- coding: utf-8 -*-
 from scrapy.contrib.spiders import CrawlSpider, Rule
 from scrapy.contrib.linkextractors import LinkExtractor
 from forum.items import PostItemsList
 import logging
 from bs4 import BeautifulSoup
 import re
+import string
 
 # import lxml.html
 # from lxml.etree import ParserError
@@ -21,7 +23,7 @@ import re
 
 
 class ForumsSpider(CrawlSpider):
-    name = "adhd_idonline_spider"
+    name = "adhd_ldonline_spider"
     allowed_domains = ["ldonline.org"]
     start_urls = [
         "http://www.ldonline.org/xarbb/?catid=769",
@@ -62,9 +64,9 @@ class ForumsSpider(CrawlSpider):
                 './/td[@class="xar-norm author"]/*/a/text()').extract()[0]
             author_link = post.xpath(
                 './/td[@class="xar-norm author"]/*/a/@href').extract()[0]
-            create_date = post.xpath(
+            create_date = self.cleanText(post.xpath(
                 './/span[@class="xar-sub"][contains(text(), "Posted")]/text()'
-            ).extract()[0]
+            ).extract()[0].replace("Posted","").replace("Posted:","").replace("at",""))
             message = ''.join(post.xpath(
                 './/div[2]/p//text()'
             ).extract())

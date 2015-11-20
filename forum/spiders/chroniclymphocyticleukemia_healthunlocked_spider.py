@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import scrapy
 from forum.items import PostItemsList
 import time
@@ -6,6 +7,7 @@ import json
 from selenium import webdriver
 from bs4 import BeautifulSoup
 import re
+import string
 
 
 class HealthUnlocked(scrapy.Spider):

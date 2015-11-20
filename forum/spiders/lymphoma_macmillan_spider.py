@@ -1,8 +1,10 @@
+# -*- coding: utf-8 -*-
 from scrapy.contrib.spiders import CrawlSpider, Rule
 from scrapy.contrib.linkextractors import LinkExtractor
 from forum.items import PostItemsList
 import re
 from bs4 import BeautifulSoup
+import string
 
 # import lxml.html
 # from lxml.etree import ParserError

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import scrapy
 from scrapy.contrib.spiders import CrawlSpider, Rule
 from scrapy.contrib.linkextractors import LinkExtractor
@@ -6,6 +7,7 @@ from forum.items import PostItemsList
 import re
 from bs4 import BeautifulSoup
 import logging
+import string
 
 ## LOGGING to file
 #import logging
@@ -39,6 +41,7 @@ class ForumsSpider(CrawlSpider):
         )
 
     def cleanText(self,text):
+        # logging.info(text)
         soup = BeautifulSoup(text,'html.parser')
         text = soup.get_text();
         text = re.sub("( +|\n|\r|\t|\0|\x0b|\xa0|\xbb|\xab)+",' ',text).strip()
@@ -60,9 +63,9 @@ class ForumsSpider(CrawlSpider):
         item['condition'] = condition
         item['create_date'] = response.xpath('//div[@class="xg_module xg_module_with_dialog"]//ul[@class="navigation byline"]/li/a[@class="nolink"][2]/text()').extract_first().replace('on','').replace('in','').strip()
         
-        message = response.xpath('//div[@class="xg_module xg_module_with_dialog"]//div[@class="xg_user_generated"]/p/text()').extract()
+        message = " ".join(response.xpath('//div[@class="xg_module xg_module_with_dialog"]//div[@class="xg_user_generated"]/p/text()').extract())
         if not message:
-            message = response.xpath('//div[@class="xg_module xg_module_with_dialog"]//div[@class="xg_user_generated"]/text()').extract()
+            message = " ".join(response.xpath('//div[@class="xg_module xg_module_with_dialog"]//div[@class="xg_user_generated"]/text()').extract())
         item['post'] = self.cleanText(message)
 
         # item['post'] = re.sub('\s+',' '," ".join(response.xpath('//div[@class="xg_module xg_module_with_dialog"]//div[@class="xg_user_generated"]/p/text()').extract()).replace("\t","").replace("\n","").replace("\r",""))
@@ -81,9 +84,9 @@ class ForumsSpider(CrawlSpider):
             item['author_link'] = post.xpath('./dt[@class="byline"]/a[contains(@href,"user")]/@href').extract_first()
             item['condition'] = condition
             item['create_date'] = post.xpath('./dt[@class="byline"]/span[@class="timestamp"]/text()').extract_first()
-            message = post.xpath('.//div[@class="description"]/div[@class="xg_user_generated"]/p/text()').extract()
+            message = " ".join(post.xpath('.//div[@class="description"]/div[@class="xg_user_generated"]/p/text()').extract())
             if not message:
-                message  = post.xpath('.//div[@class="description"]/div[@class="xg_user_generated"]/text()').extract()
+                message  = " ".join(post.xpath('.//div[@class="description"]/div[@class="xg_user_generated"]/text()').extract())
             item['post'] = self.cleanText(message)
 
             # item['post'] = re.sub('\s+',' '," ".join(post.xpath('.//div[@class="description"]/div[@class="xg_user_generated"]/p/text()').extract()).replace("\t","").replace("\n","").replace("\r",""))

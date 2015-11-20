@@ -8,6 +8,7 @@ from forum.items import PostItemsList
 import re
 from bs4 import BeautifulSoup
 import logging
+import string
 
 ## LOGGING to file
 #import logging

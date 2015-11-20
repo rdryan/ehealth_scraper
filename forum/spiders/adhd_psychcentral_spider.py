@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import scrapy
 from scrapy.contrib.spiders import CrawlSpider, Rule
 from scrapy.contrib.linkextractors import LinkExtractor
@@ -6,6 +7,7 @@ from forum.items import PostItemsList
 import re
 from bs4 import BeautifulSoup
 import logging
+import string
 
 ## LOGGING to file
 #import logging
@@ -17,7 +19,7 @@ import logging
 
 # Spider for crawling Adidas website for shoes
 class ForumsSpider(CrawlSpider):
-    name = "adhd_psychcentral_sspider"
+    name = "adhd_psychcentral_spider"
     allowed_domains = ["psychcentral.com"]
     start_urls = [
         "http://forums.psychcentral.com/attention-deficit-disorder-add-adhd/",
@@ -57,17 +59,16 @@ class ForumsSpider(CrawlSpider):
         condition="adhd"
         for post in posts:
             item = PostItemsList()
-            item['author'] = post.xpath('.//a[@class="bigusername"]/text()').extract()
+            item['author'] = post.xpath('.//a[@class="bigusername"]/text()').extract()[0]
             item['author_link'] = post.xpath('.//a[@class="bigusername"]/@href').extract()[0]
             item['condition'] = condition
             create_date = ''.join(post.xpath('.//td[@class="thead"]//text()').extract())
-            item['create_date']= self.cleanText(create_date) 
+            item['create_date']= re.sub(r'#\d+$','',self.cleanText(create_date)).strip()
             
             message = ''.join(post.xpath('.//div[contains(@id,"post_message")]/text()').extract())
             item['post'] = self.cleanText(message)
             # item['tag']=''
             item['topic'] = topic
             item['url']=url
-            logging.info(item.__str__)
             items.append(item)
         return items

@@ -8,6 +8,7 @@ from forum.items import PostItemsList
 import re
 import logging
 from bs4 import BeautifulSoup
+import string
 # import lxml.html
 # from lxml.etree import ParserError
 # from lxml.cssselect import CSSSelector

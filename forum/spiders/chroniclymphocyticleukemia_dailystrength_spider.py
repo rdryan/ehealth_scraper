@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import scrapy
 from forum.items import PostItemsList
 import time
@@ -5,6 +6,8 @@ from selenium import webdriver
 from bs4 import BeautifulSoup
 import re
 import logging
+import string
+
 class DailyStrength(scrapy.Spider):
 	name = "chroniclymphocyticleukemia_dailystrength_spider"
 	allowed_domains = ["dailystrength.org"]

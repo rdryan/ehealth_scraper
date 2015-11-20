@@ -1,7 +1,9 @@
+# -*- coding: utf-8 -*-
 import scrapy
 from forum.items import PostItemsList
 import re
 from bs4 import BeautifulSoup
+import string
 
 class CancerCompass(scrapy.Spider):
 	name = "chroniclymphocyticleukemia_cancerorg_spider"

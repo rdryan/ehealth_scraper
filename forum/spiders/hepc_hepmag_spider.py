@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import scrapy
 from scrapy.contrib.spiders import CrawlSpider, Rule
 from scrapy.contrib.linkextractors import LinkExtractor
@@ -11,6 +12,7 @@ import re
 from bs4 import BeautifulSoup
 import urlparse
 import urllib
+import string
 
 
 ## LOGGING to file

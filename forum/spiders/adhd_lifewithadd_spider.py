@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import scrapy
 from scrapy.contrib.spiders import CrawlSpider, Rule
 from scrapy.contrib.linkextractors import LinkExtractor
@@ -6,6 +7,7 @@ from forum.items import PostItemsList
 import re
 from bs4 import BeautifulSoup
 import logging
+import string
 
 ## LOGGING to file
 #import logging
@@ -56,7 +58,7 @@ class ForumsSpider(CrawlSpider):
         item['post'] = re.sub('\s+',' '," ".join(response.xpath('//div[@class="xg_module xg_module_with_dialog"]//div[@class="xg_user_generated"]/p/text()').extract()).replace("\t","").replace("\n","").replace("\r",""))
         if not item['post']:
             item['post'] = re.sub('\s+',' '," ".join(response.xpath('//div[@class="xg_module xg_module_with_dialog"]//div[@class="xg_user_generated"]/text()').extract()).replace("\t","").replace("\n","").replace("\r",""))
-        item['tag']=condition
+        # item['tag']=condition
         item['topic'] = topic
         item['url']=url
         logging.info(item.__str__)

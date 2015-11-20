@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 from forum.items import PostItemsList
 import re
 # from helpers import cleanText
-
+import string
 
 class EpilepsyBreastcancerSpiderSpider(CrawlSpider):
     name = 'breastcancer_community_spider'

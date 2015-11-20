@@ -3,9 +3,8 @@ from scrapy.linkextractors import LinkExtractor
 from scrapy.spiders import CrawlSpider, Rule
 from bs4 import BeautifulSoup
 import re
-from bs4 import BeautifulSoup
 from forum.items import PostItemsList
-
+import string
 
 class EpilepsyBreastcancercareSpiderSpider(CrawlSpider):
     name = 'breastcancer_breastcancercare_spider'
