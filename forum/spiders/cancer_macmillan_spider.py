@@ -22,13 +22,16 @@ import string
 
 # Spider for crawling Adidas website for shoes
 class ForumsSpider(CrawlSpider):
-    name = "carcinoidcancer_macmillan_spider"
+    name = "cancer_macmillan_spider"
     allowed_domains = ["macmillan.org.uk"]
 #    start_urls = [
 #        "http://www.healingwell.com/community/default.aspx?f=23&m=1001057",
 #    ]
     start_urls = [
         "https://community.macmillan.org.uk/cancer_types/neuroendocrine-cancer/discussions?ThreadSortBy=Subject&SortOrder=Ascending",
+        "https://community.macmillan.org.uk/cancer_types/breast-cancer/discussions?pi1116=1",
+        "https://community.macmillan.org.uk/cancer_types/lung-cancer/discussions",
+        "https://community.macmillan.org.uk/cancer_types/non-hodgkin-lymphoma/discussions"
     ]
 
     rules = (
@@ -57,7 +60,7 @@ class ForumsSpider(CrawlSpider):
         posts = sel.css('.content-item')
         items = []
         topic = " ".join(sel.css('.forum-stats-container').xpath('./h1/text()').extract())
-        condition="carcinoid cancer"
+        condition="cancer"
         url = response.url
         for post in posts:
             item = PostItemsList()

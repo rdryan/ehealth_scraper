@@ -11,10 +11,11 @@ import string
 
 # Spider for crawling Adidas website for shoes
 class ForumsSpider(CrawlSpider):
-    name = "lungcancer_macmillan_spider"
-    allowed_domains = ["community.macmillan.org.uk"]
+    name = "cancer_cancer_spider"
+    allowed_domains = ["csn.cancer.org"]
     start_urls = [
-        "https://community.macmillan.org.uk/cancer_types/lung-cancer/discussions",
+        "https://csn.cancer.org/forum/129",
+        "https://csn.cancer.org/forum/126"
     ]
 
     rules = (
@@ -22,11 +23,11 @@ class ForumsSpider(CrawlSpider):
             # Excludes links that end in _W.html or _M.html, because they point to 
             # configuration pages that aren't scrapeable (and are mostly redundant anyway)
             Rule(LinkExtractor(
-                    restrict_xpaths='//h4[@class="post-name"]/a', canonicalize=False,
+                    restrict_xpaths='//td[@class="title"]/a',
                 ), callback='parsePostsList'),
             # Rule to follow arrow to next product grid
             Rule(LinkExtractor(
-                    restrict_xpaths='//a[@class="next"]'
+                    restrict_xpaths='//a[@title="Go to next page"]'
                 ), follow=True),
         )
 
@@ -40,23 +41,32 @@ class ForumsSpider(CrawlSpider):
     # https://github.com/scrapy/dirbot/blob/master/dirbot/pipelines.py
     def parsePostsList(self,response):
         sel = Selector(response)
-        posts = sel.xpath('//ul[@class="content-list"]/li')
-        condition="lung cancer"
+        posts = sel.xpath('//div[@id="comments"]/table')
         items = []
-        topic = response.xpath('//h1/text()').extract_first().strip()
+        condition="cancer"
+        topic = response.xpath('//div[@class="left-corner"]/h2/text()').extract_first()
         url = response.url
+
+        item = PostItemsList()
+        item['author'] = response.xpath('.//table[@class="node node-forum"]//div[@class="author"]/text()').extract_first()
+        item['author_link'] = ''
+        item['condition'] = condition
+        item['create_date'] = response.xpath('.//table[@class="node node-forum"]//div[@class="date"]/span/text()').extract_first()
+        item['post'] = re.sub('\s+',' '," ".join(response.xpath('.//table[@class="node node-forum"]//div[@class="content"]/p/text()').extract()).replace("\t","").replace("\n","").replace("\r","").replace(u'\xa0',''))
+        item['tag']=''
+        item['topic'] = topic
+        item['url']=url
+        items.append(item)
         
         for post in posts:
             item = PostItemsList()
-            item['author'] = post.xpath('.//span[@class="user-name"]/a/text()').extract()[1].strip()
-            item['author_link'] = post.xpath('.//span[@class="user-name"]/a/@href').extract_first()
+            item['author'] = post.xpath('.//div[@class="author"]/text()').extract_first()
+            item['author_link'] = ''
             item['condition'] = condition
-            item['create_date'] = post.xpath('.//div[@class="post-date"]/span[@class="value"]/a/text()').extract_first()
-      
-            item['post'] = self.cleanText(" ".join(post.xpath('.//div[@class="post-content user-defined-markup"]/p/text()').extract()))
+            item['create_date'] = post.xpath('.//div[@class="date"]/span/text()').extract_first()
+            item['post'] = self.cleanText(" ".join(post.xpath('.//div[@class="content"]/p/text()').extract()))
             # item['tag']='epilepsy'
             item['topic'] = topic
             item['url']=url
-            logging.info(item.__str__)
             items.append(item)
         return items
