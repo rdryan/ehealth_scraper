@@ -19,9 +19,6 @@ class ForumsSpider(CrawlSpider):
     ]
 
     rules = (
-            # Rule to go to the single product pages and run the parsing function
-            # Excludes links that end in _W.html or _M.html, because they point to 
-            # configuration pages that aren't scrapeable (and are mostly redundant anyway)
             Rule(LinkExtractor(
                     restrict_xpaths='//a[@class="subLink"]',
                 ), callback='parsePostsList'),
@@ -31,13 +28,10 @@ class ForumsSpider(CrawlSpider):
                 ), follow=True),
         )
 
-
     def cleanText(self, str):
         soup = BeautifulSoup(str, 'html.parser')
         return re.sub(" +|\n|\r|\t|\0|\x0b|\xa0",' ',soup.get_text()).strip()
 
-    # https://github.com/scrapy/dirbot/blob/master/dirbot/spiders/dmoz.py
-    # https://github.com/scrapy/dirbot/blob/master/dirbot/pipelines.py
     def parsePostsList(self,response):
         sel = Selector(response)
         posts = sel.xpath('//div[@class="mbpost"]')
@@ -45,7 +39,6 @@ class ForumsSpider(CrawlSpider):
         condition = "lung cancer"
         topic = response.xpath('//h1/text()').extract_first()
         url = response.url
-        
         for post in posts:
             item = PostItemsList()
             item['author'] = post.xpath('.//div[@class="header"]/p/a/text()').extract_first()
