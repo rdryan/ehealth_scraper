@@ -24,9 +24,6 @@ import string
 class ForumsSpider(CrawlSpider):
     name = "hiv_healthboards_spider"
     allowed_domains = ["inspire.com"]
-#    start_urls = [
-#        "http://www.healingwell.com/community/default.aspx?f=23&m=1001057",
-#    ]
     start_urls = [
         "https://www.inspire.com/groups/hiv-and-aids/",
     ]

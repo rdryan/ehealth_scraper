@@ -10,13 +10,6 @@ import logging
 import string
 import time
 
-## LOGGING to file
-#import logging
-#from scrapy.log import ScrapyFileLogObserver
-
-#logfile = open('testlog.log', 'w')
-#log_observer = ScrapyFileLogObserver(logfile, level=logging.DEBUG)
-#log_observer.start()
 
 # Spider for crawling Adidas website for shoes
 class ForumsSpider(CrawlSpider):
@@ -24,12 +17,12 @@ class ForumsSpider(CrawlSpider):
     allowed_domains = ["www.medhelp.org"]
     start_urls = [
         "http://www.medhelp.org/forums/Epilepsy/show/235",
+        "http://www.medhelp.org/forums/Hepatitis-C/show/75",
+        "http://www.medhelp.org/forums/Multiple-Sclerosis/show/41",
+        "http://www.medhelp.org/forums/HIV---Prevention/show/117"
     ]
 
     rules = (
-            # Rule to go to the single product pages and run the parsing function
-            # Excludes links that end in _W.html or _M.html, because they point to 
-            # configuration pages that aren't scrapeable (and are mostly redundant anyway)
             Rule(LinkExtractor(
                     restrict_xpaths='//div[@class="fonts_resizable_subject subject_title "]/a',
                     canonicalize=False,
@@ -42,7 +35,6 @@ class ForumsSpider(CrawlSpider):
                 ), follow=True),
         )
 
-
     def cleanText(self,text, printableOnly =True):
         soup = BeautifulSoup(text,'html.parser')
         text = soup.get_text();
@@ -51,8 +43,6 @@ class ForumsSpider(CrawlSpider):
             return filter(lambda x: x in string.printable, text)
         return text
 
-    # https://github.com/scrapy/dirbot/blob/master/dirbot/spiders/dmoz.py
-    # https://github.com/scrapy/dirbot/blob/master/dirbot/pipelines.py
     def parsePostsList(self,response):
         sel = Selector(response)
         condition=sel.xpath('//*[@id="community_header"]/div[1]/a[2]/text()').extract_first()

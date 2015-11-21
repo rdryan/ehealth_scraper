@@ -38,10 +38,9 @@ class ForumsSpider(CrawlSpider):
                 ), follow=True),
         )
 
-
     def cleanText(self, str):
         soup = BeautifulSoup(str, 'html.parser')
-        return re.sub(" +|\n|\r|\t|\0|\x0b|\xa0",' ',soup.get_text()).strip()
+        return re.sub(" +|\n|\r|\t|\0|\x0b|\xa0|\xbb",' ',soup.get_text()).strip()
 
     # https://github.com/scrapy/dirbot/blob/master/dirbot/spiders/dmoz.py
     # https://github.com/scrapy/dirbot/blob/master/dirbot/pipelines.py
@@ -61,9 +60,7 @@ class ForumsSpider(CrawlSpider):
                 item['condition'] = condition
                 item['create_date'] = self.cleanText(post.xpath('.//div[@class="keyinfo"]/div[@class="smalltext"]/text()').extract()[1])
                 item['post'] = self.cleanText(" ".join(post.xpath('.//div[@class="post"]/div[@class="inner"]/text()').extract()))
-                # item['tag']=''
                 item['topic'] = topic
                 item['url']=url
-                logging.info(item.__str__)
                 items.append(item)
         return items

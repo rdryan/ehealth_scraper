@@ -49,12 +49,9 @@ class ForumsSpider(CrawlSpider):
         )
 
 
-    def parseText(self, str):
+    def cleanText(self, str):
         soup = BeautifulSoup(str, 'html.parser')
-        return re.sub(" +|\n|\r|\t|\0|\x0b|\xa0",' ',soup.get_text()).strip()
-
-    # https://github.com/scrapy/dirbot/blob/master/dirbot/spiders/dmoz.py
-    # https://github.com/scrapy/dirbot/blob/master/dirbot/pipelines.py
+        return re.sub(" +|\n|\r|\t|\0|\x0b|\xa0",' ',soup.get_text()).strip()    
     def parsePost(self,response):
         logging.info(response)
         sel = Selector(response)
@@ -83,7 +80,6 @@ class ForumsSpider(CrawlSpider):
         # item['tag']=''
         item['topic'] = topic
         item['url']=url
-        logging.info(post_msg)
         items.append(item)
 
         for post in posts:
@@ -106,6 +102,5 @@ class ForumsSpider(CrawlSpider):
             # item['tag']='hiv'
             item['topic'] = topic
             item['url']=url
-            logging.info(post_msg)
             items.append(item)
         return items
