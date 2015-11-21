@@ -28,7 +28,8 @@ class ForumsSpider(CrawlSpider):
     name = "all_healingwell_spider"
     allowed_domains = ["www.healingwell.com"]
     start_urls = [
-        "http://www.healingwell.com/community/default.aspx?f=23&m=1001057",
+        "http://www.healingwell.com/community/default.aspx?f=23&m=1001057"
+        ,"http://www.healingwell.com/community/?f=10"
     ]
 
     rules = (

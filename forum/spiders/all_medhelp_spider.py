@@ -20,7 +20,8 @@ class ForumsSpider(CrawlSpider):
         "http://www.medhelp.org/forums/Hepatitis-C/show/75",
         "http://www.medhelp.org/forums/Multiple-Sclerosis/show/41",
         "http://www.medhelp.org/forums/HIV---Prevention/show/117",
-        "http://www.medhelp.org/forums/Leukemia--Lymphoma-/show/139"
+        "http://www.medhelp.org/forums/Leukemia--Lymphoma-/show/139",
+        "http://www.medhelp.org/forums/Rheumatoid-Arthritis/show/377"
     ]
 
     rules = (

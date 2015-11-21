@@ -1,6 +1,11 @@
 chroniclymphocyticleukemia_healthunlocked_spide
 lungcancer_lungcancercanada_spider
 lymphoma_forumslymphoma_spider
-lymphoma_patientinfo_spider
 
+
+
+# combine into one spider
+
+lymphoma_patientinfo_spider
+rheumatoid_arthritis_patientinfo_spider
 

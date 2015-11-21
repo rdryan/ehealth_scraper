@@ -61,6 +61,7 @@ class ForumsSpider(Spider):
 
     def parse(self, response):
         self.driver.get(response.url)
+        logging.info("parse url: "+response.url)
         el = Selector(text=self.driver.page_source).xpath('//ul[contains(@class, "thread-list")]/li//h3[contains(@class, "title")]/a/@href')
         requestList=[]
         for r in el.extract():
@@ -68,6 +69,7 @@ class ForumsSpider(Spider):
 
         el = Selector(text=self.driver.page_source).xpath('//*[@id="group-discussions"]/form[1]/a')
         for r in el.extract():
+            logging.info("url: "+r)
             requestList.append(Request(response.urljoin(r), callback=self.parsePost))
 
         if len(requestList)>0:
@@ -94,7 +96,7 @@ class ForumsSpider(Spider):
         # item['tag']='rheumatoid arthritis'
         item['topic'] = topic
         item['url']=url
-        logging.info(post_msg)
+        
         items.append(item)
 
         for post in posts:

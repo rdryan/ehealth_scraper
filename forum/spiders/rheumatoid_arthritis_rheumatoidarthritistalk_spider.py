@@ -76,7 +76,6 @@ class ForumsSpider(CrawlSpider):
             # item['tag']='rheumatoid arthritis'
             item['topic'] = topic
             item['url']=url
-            logging.info(post_msg)
             items.append(item)
         return items
 
