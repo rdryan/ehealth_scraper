@@ -62,12 +62,9 @@ class ForumsSpider(CrawlSpider):
             item['author_link']=post.css('.vt_asked_by_user').xpath("./a").xpath("@href").extract()[0]
             item['condition']=condition
             item['create_date']= post.css('.vt_first_timestamp').xpath('text()').extract().extend(response.css('.vt_reply_timestamp').xpath('text()').extract())
-            message = post.css('.vt_post_body').xpath('text()').extract()
-            item['post'] = self.cleanText(message)
-            # item['post'] = re.sub('\s+',' '," ".join(post.css('.vt_post_body').xpath('text()').extract()).replace("\t","").replace("\n","").replace("\r",""))
-            # item['tag']='epilepsy'
+            item['post'] =  self.cleanText(" ".join(post.css('.vt_post_body').xpath('text()').extract()))
+            
             item['topic'] = topic
             item['url']=url
-            logging.info(item.__str__)
             items.append(item)
         return items

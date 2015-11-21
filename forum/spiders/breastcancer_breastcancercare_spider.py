@@ -56,7 +56,7 @@ class EpilepsyBreastcancercareSpiderSpider(CrawlSpider):
         condition="breast cancer"
         url = response.url
         subject = response.xpath(
-            '//div[@class="lia-message-subject"]//text()').extract()
+            '//span[@class="lia-link-navigation child-thread lia-link-disabled"]//text()').extract()
         subject = ''.join([item.strip() for item in subject])
         posts = response.xpath(
             '//div[@class="lia-linear-display-message-view"]')

@@ -8,7 +8,7 @@ import re
 import logging
 from bs4 import BeautifulSoup
 import string
-
+import time
 # import lxml.html
 # from lxml.etree import ParserError
 # from lxml.cssselect import CSSSelector
@@ -55,6 +55,19 @@ class ForumsSpider(CrawlSpider):
         text = re.sub("( +|\n|\r|\t|\0|\x0b|\xa0|\xbb|\xab)+",' ',text).strip()
         return text 
 
+    def getDate(self,date_str):
+        # '7/11/2014 3:22 PM (GMT -7)'
+        result1 = re.compile(r"^yesterday").match(date_str)
+        result2=re.compile(r"^today").match(date_str)
+        yesterday = date.today() - timedelta(1)
+        if result1:
+            # 'create_date': u'Yesterday 10:51 AM (GMT -7)',
+            return time.strftime("%m/%d/%Y ")+date_str.replace("yesterday")
+        elif result2:
+            return yestrday.strftime("%m/%d/%Y ")+date_str.replace("today")
+        else:
+            return date_str
+
     # https://github.com/scrapy/dirbot/blob/master/dirbot/spiders/dmoz.py
     # https://github.com/scrapy/dirbot/blob/master/dirbot/pipelines.py
     def parsePost(self, response):
@@ -63,7 +76,7 @@ class ForumsSpider(CrawlSpider):
         posts = sel.css("Table.PostBox")
         breadcrumbs = sel.css("#Breadcrumbs")
         # condition = breadcrumbs.xpath("./a[3]/text()")
-        condition = breadcrumbs.xpath("./a[3]/text()").extract()[0]
+        condition = breadcrumbs.xpath("./a[3]/text()").extract()[0].lower()
         items = []
         topic = response.xpath('//div[contains(@id,"PageTitle")]/h1/text()').extract()[0]
         url = response.url
@@ -71,8 +84,8 @@ class ForumsSpider(CrawlSpider):
             item = PostItemsList()
             item['author'] = post.css('.msgUser').xpath("./a[2]").xpath("text()").extract()[0]
             item['author_link'] = post.css('.msgUser').xpath("./a[2]/@href").extract()[0]
-            item['condition'] = condition
-            item['create_date'] = re.sub(" +|\n|\r|\t|\0|\x0b|\xa0", ' ', response.css('td.msgThreadInfo').xpath('text()').extract()[0]).strip()
+            item['condition'] = condition.lower()
+            item['create_date'] = re.sub(" +|\n|\r|\t|\0|\x0b|\xa0", ' ', response.css('td.msgThreadInfo').xpath('text()').extract()[0].replace("Posted ","")).strip().lower()
             post_msg = self.cleanText(post.css('.PostMessageBody').extract()[0])
             item['post'] = post_msg
             # item['tag'] = ''

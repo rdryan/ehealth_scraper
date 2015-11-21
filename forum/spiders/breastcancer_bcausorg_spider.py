@@ -63,17 +63,18 @@ class ForumsSpider(CrawlSpider):
         condition="breast cancer"
         
         for post in posts:
-            item = PostItemsList()
-            item['author'] = post.xpath('.//b[@class="postauthor"]/text()').extract()[0]
-            item['author_link'] = post.xpath('.//a[contains(@href,"viewprofile")]/@href').extract()[0]
-            item['condition'] = condition
-            
-            item['create_date'] = post.xpath('.//div[contains(.//text(),"Posted")]/text()').extract()[0]
-           
-            message = ''.join(post.xpath('.//div[@class="postbody"]/text()').extract())
-            item['post'] = self.cleanText(message)
-            # item['tag']='breastcancer'
-            item['topic'] = topic
-            item['url']=url
-            items.append(item)
+            author = " ".join(post.xpath('.//b[@class="postauthor"]/text()').extract())
+            message= self.cleanText(''.join(post.xpath('.//div[@class="postbody"]/text()').extract()))
+            if author!='' and post!='':
+                item = PostItemsList()
+                item['author'] = author
+                item['author_link'] = " ".join(post.xpath('.//a[contains(@href,"viewprofile")]/@href').extract())
+                item['condition'] = condition
+                
+                item['create_date'] = self.cleanText(" ".join(post.xpath('.//div[contains(.//text(),"Posted")]/text()').extract()))
+                item['post'] = message
+                # item['tag']='breastcancer'
+                item['topic'] = topic
+                item['url']=url
+                items.append(item)
         return items

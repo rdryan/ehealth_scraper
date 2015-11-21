@@ -31,17 +31,17 @@ class ForumsSpider(CrawlSpider):
             # configuration pages that aren't scrapeable (and are mostly redundant anyway)
             Rule(LinkExtractor(
                     restrict_xpaths='//a[contains(@href,"topic")]',
-                    canonicalize=True,
+                    canonicalize=False,
                 ), callback='parsePostsList'),
             # Rule to follow arrow to next product grid
             Rule(LinkExtractor(
                     restrict_xpaths='//a[contains(@href,"forum")]',
-                    canonicalize=True,
+                    canonicalize=False,
                     deny=(r'memuser_profile_*\.html',)
                 ), follow=True),
             Rule(LinkExtractor(
                     restrict_xpaths='//a[@class="pageLink"]',
-                    canonicalize=True,
+                    canonicalize=False,
                     deny=(r'memuser_profile_*\.html',)
                 ), follow=True),
         )
@@ -65,20 +65,22 @@ class ForumsSpider(CrawlSpider):
         #for post in posts:
         author = sel.xpath('//span[contains(@id, "userProfile")]/text()').extract()
         author_link = sel.xpath('//div[@class="dropDownMenu"]/a[contains(@href,"member")]/@href').extract()
-        condition = condition
-        create_date= sel.xpath('//td[contains(@class,"TableTop")]/text()').extract()
+        create_date = [self.cleanText(x.replace("Posted:","")) for x in sel.xpath('//td[contains(@class,"TableTop")]/text()').extract()]
+        create_date = [x for x in create_date if x!='']
+        # create_date1= sel.xpath('//td[contains(@class,"msgOddTableTop")]/text()').extract()
+        # create_date2= sel.xpath('//td[contains(@class,"msgEvenTableTop")]/text()').extract()
+        # create_date = [self.cleanText(x) for x in zip(create_date1,create_date2)]
         message = sel.xpath('//div[@class="msgBody"]//text()').extract()
 
         for i in range(len(author)):
             item = PostItemsList()
             item['author'] = author[i]
-            item['author_link'] = author_link[i]
+            item['author_link'] = re.sub(r'\&SID=\w+$','',author_link[i])
             item['condition'] = condition
-            item['create_date'] = self.cleanText(create_date[i])    
+            item['create_date'] = create_date[i] #self.cleanText(create_date[i])    
             item['post'] = self.cleanText(message[i])
             # item['tag']=''
             item['topic'] = topic
             item['url']=url            
-            logging.info(item.__str__)
             items.append(item)
         return items

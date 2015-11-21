@@ -8,6 +8,7 @@ import re
 from bs4 import BeautifulSoup
 import logging
 import string
+import time
 
 ## LOGGING to file
 #import logging
@@ -31,15 +32,24 @@ class ForumsSpider(CrawlSpider):
             # configuration pages that aren't scrapeable (and are mostly redundant anyway)
             Rule(LinkExtractor(
                     restrict_xpaths='//div[@class="fonts_resizable_subject subject_title "]/a',
-                    canonicalize=True,
+                    canonicalize=False,
                 ), callback='parsePostsList'),
 
             # Rule to follow arrow to next product grid
             Rule(LinkExtractor(
                     restrict_xpaths='//div[@id="pagination_nav"]/a[@class="msg_next_page"]',
-                    canonicalize=True,
+                    canonicalize=False,
                 ), follow=True),
         )
+
+
+    def cleanText(self,text, printableOnly =True):
+        soup = BeautifulSoup(text,'html.parser')
+        text = soup.get_text();
+        text = re.sub("( +|\n|\r|\t|\0|\x0b|\xa0|\xbb|\xab)+",' ',text).strip()
+        if printableOnly:
+            return filter(lambda x: x in string.printable, text)
+        return text
 
     # https://github.com/scrapy/dirbot/blob/master/dirbot/spiders/dmoz.py
     # https://github.com/scrapy/dirbot/blob/master/dirbot/pipelines.py
@@ -50,16 +60,17 @@ class ForumsSpider(CrawlSpider):
         items = []
         topic = response.xpath('//div[@class="question_title"]/text()').extract_first()
         url = response.url
+        cnt =0
         for post in posts:
             item = PostItemsList()
             item['author'] = post.xpath('.//div[@class="post_byline"]/a/text()').extract_first()
             item['author_link'] = post.xpath('.//div[@class="post_byline"]/a/@href').extract_first()
-            item['condition']=condition
-            item['create_date'] = post.xpath('.//div[@class="post_byline"]/span[@class="byline_date"]/text()').extract_first()
-            item['post'] = re.sub('\s+',' '," ".join(post.xpath('.//div[@class="post_message fonts_resizable"]/text()').extract()).replace("\t","").replace("\n","").replace("\r",""))
-            # item['tag']=''
-            item['topic'] = topic
+            item['condition']=condition.lower()
+            epoch_time = post.xpath("//span[contains(@class,'byline_date')]/@data-timestamp").extract()[0]
+            item['create_date']= time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(float(epoch_time)))
+            item['post'] =self.cleanText(" ".join(post.xpath('.//div[@class="post_message fonts_resizable"]/text()').extract()))
+            item['topic'] = self.cleanText(topic)
             item['url']=url
-            logging.info(item.__str__)
+            cnt+=1
             items.append(item)
         return items

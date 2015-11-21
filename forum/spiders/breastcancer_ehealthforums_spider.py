@@ -25,6 +25,8 @@ class ForumsSpider(CrawlSpider):
         "http://ehealthforum.com/health/breast_cancer.html",
     ]
 
+
+
     rules = (
             # Rule to go to the single product pages and run the parsing function
             # Excludes links that end in _W.html or _M.html, because they point to 
@@ -51,23 +53,20 @@ class ForumsSpider(CrawlSpider):
     # https://github.com/scrapy/dirbot/blob/master/dirbot/pipelines.py
     def parsePostsList(self,response):
         sel = Selector(response)
-        posts = sel.xpath("//div[@class='fp_left']")
+        posts = sel.css(".vt_post_holder")
         items = []
-        topic = response.xpath("//div[@class='fp_topic_content_title']/text()").extract_first()
+        topic = response.css('h1.caps').xpath('text()').extract()[0]
         url = response.url
         condition="breast cancer"
         for post in posts:
             item = PostItemsList()
-            item['author'] = post.css('a.fp_topic_author').xpath("./span/span").xpath("text()").extract_first()
-            item['author_link']=post.css('.fp_topic_poster').xpath("./a").xpath("@href").extract_first()
+            item['author'] = post.css('.vt_asked_by_user').xpath("./a").xpath("text()").extract()[0]
+            item['author_link']=post.css('.vt_asked_by_user').xpath("./a").xpath("@href").extract()[0]
             item['condition']=condition
-            #item['create_date']= post.css('.vt_first_timestamp').xpath('text()').extract().extend(response.css('.vt_reply_timestamp').xpath('text()').extract())
-            #message = post.css('.vt_post_body').xpath('text()').extract()
-            #item['post'] = self.cleanText(message)
-            # item['post'] = re.sub('\s+',' '," ".join(post.css('.vt_post_body').xpath('text()').extract()).replace("\t","").replace("\n","").replace("\r",""))
-            # item['tag']='breast-cancer'
+            item['create_date']= post.css('.vt_first_timestamp').xpath('text()').extract().extend(response.css('.vt_reply_timestamp').xpath('text()').extract())
+            item['post'] =  self.cleanText(" ".join(post.css('.vt_post_body').xpath('text()').extract()))
+            
             item['topic'] = topic
             item['url']=url
-            logging.info(item.__str__)
             items.append(item)
         return items

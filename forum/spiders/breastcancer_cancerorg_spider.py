@@ -49,7 +49,7 @@ class EpilepsyCancerSpiderSpider(CrawlSpider):
         posts = response.xpath('//table[@class="comment comment-forum"]')
 
         node_item['author'] = node_author
-        node_item['author_link'] = '*'
+        node_item['author_link'] = ''
         node_item['condition'] = condition
         node_item['create_date'] = node_time
         node_item['post'] = node_message
