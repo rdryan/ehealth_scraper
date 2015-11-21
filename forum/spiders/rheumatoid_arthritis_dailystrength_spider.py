@@ -58,10 +58,13 @@ class ForumsSpider(CrawlSpider):
         )
 
 
-    def cleanText(self, str):
-        soup = BeautifulSoup(str, 'html.parser')
-        return re.sub(" +|\n|\r|\t|\0|\x0b|\xa0",' ',soup.get_text()).strip()
-
+    def cleanText(self,text,printableOnly=True):
+        soup = BeautifulSoup(text,'html.parser')
+        text = soup.get_text();
+        text = re.sub("( +|\n|\r|\t|\0|\x0b|\xa0|\xbb|\xab)+",' ',text).strip()
+        if(printableOnly):
+            return filter(lambda x: x in string.printable, text)
+        return text 
 
     # https://github.com/scrapy/dirbot/blob/master/dirbot/spiders/dmoz.py
     # https://github.com/scrapy/dirbot/blob/master/dirbot/pipelines.py
@@ -78,13 +81,10 @@ class ForumsSpider(CrawlSpider):
         item['author'] = post.css('.username').xpath("./a").xpath("text()").extract()[0].strip()
         item['author_link']=response.urljoin(post.css('.username').xpath("./a/@href").extract()[0])
         item['condition'] = condition
-        item['create_date']= self.cleanText(' ',post.css('.discussion_text').xpath('./span/text()').extract()[0])
-        post_msg=self.cleanText(post.css('.discussion_text').extract()[0])
-        item['post']=post_msg
-        # item['tag']='rheumatoid arthritis'
+        item['create_date']= self.cleanText(" ".join(post.css('.discussion_text').xpath('./span/text()').extract()))
+        item['post']=self.cleanText(" ".join(post.css('.discussion_text').xpath('text()').extract()))
         item['topic'] = topic
         item['url']=url
-        logging.info(post_msg)
         items.append(item)
 
         for post in posts:
@@ -94,11 +94,9 @@ class ForumsSpider(CrawlSpider):
             item['author'] = post.css('.username').xpath("./a").xpath("text()").extract()[0].strip()
             item['author_link']=response.urljoin(post.css('.username').xpath("./a/@href").extract()[0])
             item['condition'] = condition
-            item['create_date']= self.cleanText(' ',post.xpath('./tr[1]/td[2]/div/table/tr/td/span[2]/text()').extract()[0])
-            item['post']=self.cleanText(post.css('.discussion_text').extract()[0])
-            # item['tag']='rheumatoid arthritis'
+            item['create_date']= self.cleanText(' '.join(post.xpath('./tr[1]/td[2]/div/table/tr/td/span[2]/text()').extract()))
+            item['post']=self.cleanText(" ".join(post.css('.discussion_text').xpath('text()').extract()))
             item['topic'] = topic
             item['url']=url
-            logging.info(post_msg)
             items.append(item)
         return items

@@ -8,17 +8,6 @@ import re
 import logging
 from bs4 import BeautifulSoup
 import string
-# import lxml.html
-# from lxml.etree import ParserError
-# from lxml.cssselect import CSSSelector
-
-## LOGGING to file
-#import logging
-#from scrapy.log import ScrapyFileLogObserver
-
-#logfile = open('testlog.log', 'w')
-#log_observer = ScrapyFileLogObserver(logfile, level=logging.DEBUG)
-#log_observer.start()
 
 # Spider for crawling Adidas website for shoes
 class ForumsSpider(CrawlSpider):
@@ -54,8 +43,6 @@ class ForumsSpider(CrawlSpider):
         )
 
 
-    # https://github.com/scrapy/dirbot/blob/master/dirbot/spiders/dmoz.py
-    # https://github.com/scrapy/dirbot/blob/master/dirbot/pipelines.py
     def parsePost(self,response):
         logging.info(response)
         sel = Selector(response)
@@ -72,7 +59,7 @@ class ForumsSpider(CrawlSpider):
         item['create_date'] = self.parseText(sel.css('.content-primary-post').xpath('./div[1]/ul/li[1]/text()').extract()[1].split('\n')[1].strip()[1:])
         post_msg=self.parseText(str=sel.css('.content-primary-post').xpath('./div[2]/p').extract()[0])
         item['post']=post_msg
-        item['tag']=''
+        # item['tag']=''
         item['topic'] = topic
         item['url']=url
         logging.info(post_msg)
