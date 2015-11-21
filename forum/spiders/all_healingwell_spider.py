@@ -30,6 +30,8 @@ class ForumsSpider(CrawlSpider):
     start_urls = [
         "http://www.healingwell.com/community/default.aspx?f=23&m=1001057"
         ,"http://www.healingwell.com/community/?f=10"
+        ,"http://www.healingwell.com/community/default.aspx?f=25"
+        ,"http://www.healingwell.com/community/?f=35"
     ]
 
     rules = (
@@ -94,6 +96,5 @@ class ForumsSpider(CrawlSpider):
             # item['tag'] = ''
             item['topic'] = topic
             item['url'] = url
-	    logging.info(post_msg)
             items.append(item)
         return items

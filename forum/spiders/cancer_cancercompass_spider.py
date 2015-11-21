@@ -11,11 +11,17 @@ import string
 
 # Spider for crawling Adidas website for shoes
 class ForumsSpider(CrawlSpider):
-    name = "lungcancer_cancercompass_spider"
+    name = "cancer_cancercompass_spider"
     allowed_domains = ["www.cancercompass.com"]
     start_urls = [
         "http://www.cancercompass.com/message-board/cancers/lung-cancer/1,0,119,3.htm",
-        "http://www.cancercompass.com/message-board/cancers/lung-cancer/non-small-cell/1,0,119,3,54.htm"
+        "http://www.cancercompass.com/message-board/cancers/lung-cancer/non-small-cell/1,0,119,3,54.htm",
+        "http://www.cancercompass.com/message-board/cancers/prostate-cancer/1,0,119,2.htm",
+        'http://www.cancercompass.com/message-board/cancers/lymphoma/1,0,119,57.htm',
+        'http://www.cancercompass.com/message-board/cancers/lymphoma/non-hodgkins/1,0,119,57,58.htm',
+        'http://www.cancercompass.com/message-board/cancers/breast-cancer/1,0,119,1.htm',
+        "http://www.cancercompass.com/message-board/cancers/leukemia/leukemia-(cll)/1,0,119,7,50.htm",
+        "http://www.cancercompass.com/message-board/cancers/renal-cell-cancer/1,0,119,131.htm?sortby=replies&dir=1"
     ]
 
     rules = (
@@ -36,7 +42,7 @@ class ForumsSpider(CrawlSpider):
         sel = Selector(response)
         posts = sel.xpath('//div[@class="mbpost"]')
         items = []
-        condition = "lung cancer"
+        condition = "cancer"
         topic = response.xpath('//h1/text()').extract_first()
         url = response.url
         for post in posts:

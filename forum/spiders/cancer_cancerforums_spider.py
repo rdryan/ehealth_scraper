@@ -11,10 +11,11 @@ import string
 
 # Spider for crawling Adidas website for shoes
 class ForumsSpider(CrawlSpider):
-    name = "lungcancer_cancerforums_spider"
+    name = "cancer_cancerforums_spider"
     allowed_domains = ["www.cancerforums.net"]
     start_urls = [
         "http://www.cancerforums.net/forums/13-Lung-Cancer-Forum",
+        "http://www.cancerforums.net/forums/14-Prostate-Cancer-Forum"
     ]
 
     rules = (
@@ -40,7 +41,7 @@ class ForumsSpider(CrawlSpider):
     def parsePostsList(self,response):
         sel = Selector(response)
         posts = sel.xpath('//ol[@class="posts"]/li[@class="postbitlegacy postbitim postcontainer old"]')
-        condition = "lung cancer"
+        condition = "cancer"
         items = []
         topic = response.xpath('//h1/span[@class="threadtitle"]/a/text()').extract_first()
         url = response.url
