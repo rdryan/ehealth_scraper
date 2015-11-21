@@ -22,7 +22,7 @@ import string
 
 # Spider for crawling Adidas website for shoes
 class ForumsSpider(CrawlSpider):
-    name = "hiv_inspire_spider"
+    name = "hiv_healthboards_spider"
     allowed_domains = ["inspire.com"]
 #    start_urls = [
 #        "http://www.healingwell.com/community/default.aspx?f=23&m=1001057",
@@ -94,7 +94,6 @@ class ForumsSpider(CrawlSpider):
             # item['tag']='hiv'
             item['topic'] = topic
             item['url']=url
-            logging.info(post_msg)
             items.append(item)
         return items
 

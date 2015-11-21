@@ -68,6 +68,5 @@ class ForumsSpider(CrawlSpider):
                 item['post'] = self.cleanText(" ".join(post.xpath('.//div[contains(@class, "discussion_text")]/text()').extract()))
                 item['topic'] = topic.strip()
                 item['url']=url
-                logging.info(item.__str__)
                 items.append(item)
         return items

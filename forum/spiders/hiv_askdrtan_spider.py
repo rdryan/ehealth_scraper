@@ -93,12 +93,12 @@ class ForumsSpider(Spider):
         items = []
         if len(sel.xpath('//*[@id="content"]/table/thead/tr/th[1]'))==0:
             return items
-        # topic = ''
+        topic = ''
         # item='hiv'
         condition = "hiv"
         url = response.url
         item = PostItemsList()
-        item['author'] = sel.xpath('//*[@id="content"]/table/thead/tr/th[1]/span/text()').extract()[0]
+        item['author'] = self.cleanText(sel.xpath('//*[@id="content"]/table/thead/tr/th[1]/span/text()').extract()[0])
         item['author_link']=""
         date = sel.xpath('//*[@id="content"]/table/thead/tr/th[2]/span/text()').extract()[0]
 
@@ -114,7 +114,7 @@ class ForumsSpider(Spider):
         items.append(item)
 
         item = PostItemsList()
-        item['author'] = sel.xpath('//*[@id="content"]/table/tbody/tr[2]/td/div[1]').extract()[0]
+        item['author'] = self.cleanText(sel.xpath('//*[@id="content"]/table/tbody/tr[2]/td/div[1]').extract()[0])
         item['author_link']=""
         item['condition'] = condition
         item['create_date'] = date
