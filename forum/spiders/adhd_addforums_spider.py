@@ -41,11 +41,13 @@ class ForumsSpider(CrawlSpider):
                 ), follow=True),
         )
 
-    def cleanText(self,text):
+    def cleanText(self,text,printableOnly = True):
         soup = BeautifulSoup(text,'html.parser')
         text = soup.get_text();
         text = re.sub("( +|\n|\r|\t|\0|\x0b|\xa0|\xbb|\xab)+",' ',text).strip()
-        return filter(lambda x: x in string.printable, text)
+        if printableOnly:
+            return filter(lambda x: x in string.printable, text)
+        return text
 
     # https://github.com/scrapy/dirbot/blob/master/dirbot/spiders/dmoz.py
     # https://github.com/scrapy/dirbot/blob/master/dirbot/pipelines.py

@@ -76,14 +76,9 @@ class ForumsSpider(CrawlSpider):
             item['author'] = post.css('.username').xpath("./a/text()").extract()[0]
             item['author_link']=response.urljoin(post.css('.username').xpath("./a/@href").extract()[0])
             item['condition']=condition
-            item['create_date']= re.sub(" +|\n|\r|\t|\0|\x0b|\xa0",' ',post.xpath('./tr[1]/td[3]/div/text()').extract()[1]).strip()
-            post_msg=post.css('.postedText').xpath('text()').extract()[0]
-            # soup = BeautifulSoup(post_msg, 'html.parser')
-            # post_msg = re.sub(" +|\n|\r|\t|\0|\x0b|\xa0",' ',soup.get_text()).strip()
-            item['post']=self.cleanText(post_msg)
-            # item['tag']=condition
+            item['create_date']= re.sub(" +|\n|\r|\t|\0|\x0b|\xa0",' ',post.xpath('./tr[1]/td[3]/div/text()').extract()[1]).replace("Posted:","").strip()
+            item['post']=self.cleanText(post.css('.postedText').xpath('text()').extract()[0])
             item['topic'] = topic
             item['url']=url
-            logging.info(post_msg)
             items.append(item)
         return items

@@ -84,6 +84,6 @@ class DailyStrength(scrapy.Spider):
 		item['topic'] = topic
 		item['url'] = response.url
 		print(author_all_text)
-		logging.info(item.__str__())
+		logging.info(author_all_text)
 		yield item
 

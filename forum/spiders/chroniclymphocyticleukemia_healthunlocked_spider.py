@@ -85,5 +85,5 @@ class HealthUnlocked(scrapy.Spider):
 		item['post'] = author_all_text
 		item['topic'] = topic
 		item['url'] = response.url
-		
+		logging.info(author_all_text)
 		yield item

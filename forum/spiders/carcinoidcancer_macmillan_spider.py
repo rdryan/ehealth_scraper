@@ -28,20 +28,25 @@ class ForumsSpider(CrawlSpider):
 #        "http://www.healingwell.com/community/default.aspx?f=23&m=1001057",
 #    ]
     start_urls = [
-        "https://community.macmillan.org.uk/cancer_types/neuroendocrine-cancer/f/126/t/21548",
+        "https://community.macmillan.org.uk/cancer_types/neuroendocrine-cancer/discussions?ThreadSortBy=Subject&SortOrder=Ascending",
     ]
 
     rules = (
             # Rule to go to the single product pages and run the parsing function
             # Excludes links that end in _W.html or _M.html, because they point to 
             # configuration pages that aren't scrapeable (and are mostly redundant anyway)
+            Rule(LinkExtractor(
+                restrict_xpaths='//a[contains(@class,"view-post")]',
+                canonicalize=True,
+                deny='http://www.dailystrength.org/people/',
+                ), callback='parsePost', follow=True),
 
             # Rule to follow arrow to next product grid
             Rule(LinkExtractor(
-                restrict_xpaths='//div[contains(@class, "pager")]',
+                restrict_xpaths='//div[contains(@class, "page")]',
                 canonicalize=True,
                 #allow='http://www.cancerforums.net/threads/',
-            ), callback='parsePost', follow=True),
+            ), follow=True),
         )
 
     # https://github.com/scrapy/dirbot/blob/master/dirbot/spiders/dmoz.py
@@ -51,19 +56,19 @@ class ForumsSpider(CrawlSpider):
         sel = Selector(response)
         posts = sel.css('.content-item')
         items = []
-        topic = sel.css('.forum-stats-container').xpath('./h1/text()').extract()[0].strip()
+        topic = " ".join(sel.css('.forum-stats-container').xpath('./h1/text()').extract())
         condition="carcinoid cancer"
         url = response.url
         for post in posts:
             item = PostItemsList()
-            item['author'] = self.parseText(str=post.css('.user-name').xpath('./a').extract()[0].strip())
+            item['author'] = self.parseText(" ".join(post.css('.user-name').xpath('./a').extract()))
             item['author_link']=response.urljoin(post.css('.user-name').xpath('./a/@href').extract()[0])
             item['condition']=condition
-            item['create_date'] = self.parseText(str=post.css('.post-date').extract()[0])
+            item['create_date'] = self.parseText(post.css('.post-date').extract()[0]).replace("on","").strip()
             post_msg=self.parseText(str=post.css('.post-content ').extract()[0])
             item['post']=post_msg
             # item['tag']=''
-            item['topic'] = topic
+            item['topic'] =self.parseText(topic)
             item['url']=url
             logging.info(post_msg)
             items.append(item)

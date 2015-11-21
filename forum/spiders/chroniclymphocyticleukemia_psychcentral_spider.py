@@ -35,6 +35,11 @@ class PsychCentral(scrapy.Spider):
 
 	def get_all_data(self,response):
 
+		post_id = response.xpath('//td[contains(@class,"alt1")]/@id').extract_first().split("_")[-1]
+
+		date = [self.cleanText(x) for x in response.xpath('//a[contains(@name,"post'+post_id+'")]/../text()').extract()]
+		date = " ".join([x for x in date if x!=''])
+
 		post_text = response.css('.alt1').xpath('div[2]/text()').extract()
 		try:
 			post_text = str(post_text[1])
@@ -42,12 +47,10 @@ class PsychCentral(scrapy.Spider):
 			post_text = post_text.replace('\n','')
 			post_text = post_text.replace('\t','')
 		except:pass
-
-		date = response.css('.thead').xpath('text()').extract()[2]
-		date = str(date)
-		date = date.replace('\r','')
-		date = date.replace('\n','')
-		date = date.replace('\t','')
+		# //*[@id="post4713098"]/tbody/tr[1]/td[1]/text()
+		#date = " ".join(response.xpath("//tr//td[1]/text()").extract())
+		# date = " ".join(response.css('.thead').xpath('text()').extract())
+		# date = self.cleanText(date)
 		condition = "chronic lymphocytic leukemia"
 		topic = self.cleanText(response.xpath(
 				'//td[contains(@class,"navbar")]/strong/text()'

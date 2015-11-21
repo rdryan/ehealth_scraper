@@ -107,7 +107,7 @@ class ForumsSpider(CrawlSpider):
     def parsePost(self,response):
         logging.info(response)
         sel = Selector(response)
-        condition="Carcinoid Cancer"
+        condition="breast cancer"
         posts = sel.css('.comments-box')
         items = []
         topic = sel.css('.post-title').xpath('./text()').extract()[0].strip()
@@ -120,7 +120,7 @@ class ForumsSpider(CrawlSpider):
         item['create_date'] = self.parseText(sel.css('.content-primary-post').xpath('./div[1]/ul/li[1]/text()').extract()[1].split('\n')[1].strip()[1:])
         post_msg=self.parseText(str=sel.css('.content-primary-post').xpath('./div[2]/p').extract()[0])
         item['post']=post_msg
-        item['tag']=''
+        # item['tag']=''
         item['topic'] = topic
         item['url']=url
         logging.info(post_msg)

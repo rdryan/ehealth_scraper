@@ -40,7 +40,7 @@ class ForumsSpider(CrawlSpider):
                     deny=(r'user_profile_*\.html',)
                 ), follow=True),
             Rule(LinkExtractor(
-                    restrict_xpaths='//a[(@class,"table_bottom_txt"]',
+                    restrict_xpaths='//a[contains(@class,"table_bottom_txt")]',
                     canonicalize=True,
                     deny=(r'user_profile_*\.html',)
                 ), follow=True),
@@ -58,17 +58,17 @@ class ForumsSpider(CrawlSpider):
         sel = Selector(response)
         posts = sel.xpath('//tr[contains(@class,"table_row")]')
         items = []
-        topic = response.xpath('//title/text()').extract()
+        topic = response.xpath('//title/text()').extract()[0]
         url = response.url
         condition="breastcancer"
         
         for post in posts:
             item = PostItemsList()
-            item['author'] = post.xpath('.//a[contains(@class,"username usergroup")]/text()').extract()
-            item['author_link'] = post.xpath('.//a[contains(@class,"username usergroup")]/@href').extract()
+            item['author'] = post.xpath('.//a[contains(@class,"username usergroup")]/text()').extract()[0]
+            item['author_link'] = post.xpath('.//a[contains(@class,"username usergroup")]/@href').extract()[0]
             item['condition'] = condition
             
-            item['create_date'] = post.xpath('.//span[contains(@id,"posted_date")]/text()').extract()
+            item['create_date'] = post.xpath('.//span[contains(@id,"posted_date")]/text()').extract()[0]
            
             message = ''.join(post.xpath('.//span[contains(@id,"post_message")]/text()').extract())
             item['post'] = self.cleanText(message)

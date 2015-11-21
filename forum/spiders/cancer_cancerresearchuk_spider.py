@@ -22,11 +22,13 @@ class ForumsSpider(CrawlSpider):
             # Excludes links that end in _W.html or _M.html, because they point to 
             # configuration pages that aren't scrapeable (and are mostly redundant anyway)
             Rule(LinkExtractor(
-                    restrict_xpaths='//div[@class="tl-cell views-field views-field-nothing"]/a',
+                restrict_xpaths='//div[@class="tl-cell views-field views-field-nothing"]/a'
+                ,canonicalize=True
                 ), callback='parsePostsList'),
             # Rule to follow arrow to next product grid
             Rule(LinkExtractor(
-                    restrict_xpaths='//a[@title="Go to next page"]'
+                restrict_xpaths='//a[@title="Go to next page"]'
+                ,canonicalize=True
                 ), follow=True),
         )
 
