@@ -24,14 +24,12 @@ import string
 class ForumsSpider(CrawlSpider):
     name = "cancer_macmillan_spider"
     allowed_domains = ["macmillan.org.uk"]
-#    start_urls = [
-#        "http://www.healingwell.com/community/default.aspx?f=23&m=1001057",
-#    ]
     start_urls = [
         "https://community.macmillan.org.uk/cancer_types/neuroendocrine-cancer/discussions?ThreadSortBy=Subject&SortOrder=Ascending",
         "https://community.macmillan.org.uk/cancer_types/breast-cancer/discussions?pi1116=1",
         "https://community.macmillan.org.uk/cancer_types/lung-cancer/discussions",
-        "https://community.macmillan.org.uk/cancer_types/non-hodgkin-lymphoma/discussions"
+        "https://community.macmillan.org.uk/cancer_types/non-hodgkin-lymphoma/discussions",
+        "https://community.macmillan.org.uk/cancer_types/prostate-cancer/discussions"
     ]
 
     rules = (
