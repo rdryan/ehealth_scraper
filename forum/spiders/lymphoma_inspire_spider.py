@@ -57,7 +57,7 @@ class ForumsSpider(CrawlSpider):
         item['condition'] = condition
         item['create_date'] = ' '. join(item['create_date'][1:-2])[:-2]
         item['post'] = re.sub('\s+',' '," ".join(response.xpath('//div[@class="content-primary-post"]/div[@class="post-body"]/p/text()').extract()).replace("\t","").replace("\n","").replace("\r",""))
-        item['tag']=''
+        # item['tag']=''
         item['topic'] = topic
         item['url']=url
         logging.info(item.__str__)

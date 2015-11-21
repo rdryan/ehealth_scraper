@@ -1,4 +1,7 @@
-chroniclymphocyticleukemia_healthunlocked_spider
-chroniclymphocyticleukemia_dailystrength_spider
-multiplesclerosis_medhelp_spider
-hepc_medhelp_spider`
+chroniclymphocyticleukemia_healthunlocked_spide
+lungcancer_lungcancercanada_spider
+lymphoma_forumslymphoma_spider
+lymphoma_patientinfo_spider
+
+
+

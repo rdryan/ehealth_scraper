@@ -8,6 +8,7 @@ import re
 import logging
 from bs4 import BeautifulSoup
 import string
+
 # import lxml.html
 # from lxml.etree import ParserError
 # from lxml.cssselect import CSSSelector
@@ -22,36 +23,38 @@ import string
 
 # Spider for crawling Adidas website for shoes
 class ForumsSpider(CrawlSpider):
-    name = "multiplesclerosis_dailystrength_advice_spider"
+    name = "lymphoma_dailystrength_spider"
     allowed_domains = ["dailystrength.org"]
-#    start_urls = [
-#        "http://www.healingwell.com/community/default.aspx?f=23&m=1001057",
-#    ]
     start_urls = [
         "http://www.dailystrength.org/c/Multiple-Sclerosis-MS/support-group",
     ]
 
     rules = (
-            # Rule to go to the single product pages and run the parsing function
-            # Excludes links that end in _W.html or _M.html, because they point to 
-            # configuration pages that aren't scrapeable (and are mostly redundant anyway)
-            Rule(LinkExtractor(
-                restrict_xpaths='//table[contains(@class, "topic_snip")]',
-                canonicalize=True,
-                deny='http://www.dailystrength.org/people/',
-                ), callback='parsePost'),
+        Rule(LinkExtractor(
+            restrict_xpaths='//tr[contains(@class, "sectiontableentry2")]',
+            canonicalize=True,
+            deny='http://www.dailystrength.org/people/',
+            ), callback='parsePost', follow=True),
+        Rule(LinkExtractor(
+            restrict_xpaths='//tr[contains(@class, "sectiontableentry1")]',
+            deny='http://www.dailystrength.org/people/',
+            canonicalize=True,
+            ), callback='parsePost'),
 
-            # Rule(LinkExtractor(
-            #     restrict_xpaths='//*[@id="col1"]/div[2]/div[2]/div[1]/table/tr[3]/td[1]/a[1]/@href',
-            # ), follow=True),
-        )
+        # Rule to follow arrow to next product grid
+        Rule(LinkExtractor(
+            restrict_xpaths='//a[contains(@class, "medium")]',
+            deny='http://www.dailystrength.org/people/',
+            canonicalize=True,
+        ), follow=True),
+    )
 
     def cleanText(self,text):
         soup = BeautifulSoup(text,'html.parser')
         text = soup.get_text();
         text = re.sub("( +|\n|\r|\t|\0|\x0b|\xa0|\xbb|\xab)+",' ',text).strip()
         return text 
-
+    
     # https://github.com/scrapy/dirbot/blob/master/dirbot/spiders/dmoz.py
     # https://github.com/scrapy/dirbot/blob/master/dirbot/pipelines.py
     def parsePost(self,response):
@@ -59,7 +62,7 @@ class ForumsSpider(CrawlSpider):
         sel = Selector(response)
         posts = sel.xpath('//*[@id="col1"]/div[2]/div[2]/div[1]/table[4]')
         items = []
-        condition="multiple sclerosis"
+        condition="lymphoma"
         topic = sel.xpath('//div[contains(@class, "discussion_topic_header_subject")]/text()').extract()[0]
         url = response.url
         post = sel.xpath('//table[contains(@class, "discussion_topic")]')
@@ -67,9 +70,12 @@ class ForumsSpider(CrawlSpider):
         item['author'] = post.css('.username').xpath("./a").xpath("text()").extract()[0].strip()
         item['author_link']=response.urljoin(post.css('.username').xpath("./a/@href").extract()[0])
         item['condition']=condition
-        item['create_date']= self.cleanText(' ',post.css('.discussion_text').xpath('./span/text()').extract()[0])
-        item['post']= self.cleanText(post.css('.discussion_text').extract()[0])
-        item['tag']='epilepsy'
+        item['create_date']= re.sub("Posted on",' ',self.cleanText(post.css('.discussion_text').xpath('./span/text()').extract()[0]))
+        post_msg=self.cleanText(post.css('.discussion_text').extract()[0])
+        # soup = BeautifulSoup(post_msg, 'html.parser')
+        # post_msg = re.sub(" +|\n|\r|\t|\0|\x0b|\xa0",' ',soup.get_text()).strip()
+        item['post']=post_msg
+        # item['tag']=condition
         item['topic'] = topic
         item['url']=url
         logging.info(post_msg)
@@ -81,10 +87,12 @@ class ForumsSpider(CrawlSpider):
                 continue
             item['author'] = post.css('.username').xpath("./a").xpath("text()").extract()[0].strip()
             item['author_link']=response.urljoin(post.css('.username').xpath("./a/@href").extract()[0])
-            item['condition'] = condition
-            item['create_date']= self.cleanText(post.xpath('./tr[1]/td[2]/div/table/tr/td/span[2]/text()').extract()[0])
-            item['post']= self.cleantText(post.css('.discussion_text').extract()[0])
-            item['tag']=''
+            item['create_date']= re.sub(r"Posted on",' ',self.cleanText(post.xpath('./tr[1]/td[2]/div/table/tr/td/span[2]/text()').extract()[0]))
+            post_msg=self.cleanText(post.css('.discussion_text').extract()[0])
+            # soup = BeautifulSoup(post_msg, 'html.parser')
+            # post_msg = re.sub(" +|\n|\r|\t|\0|\x0b|\xa0",' ',soup.get_text()).strip()
+            item['post']=post_msg
+            # item['tag']='Lymphoma'
             item['topic'] = topic
             item['url']=url
             items.append(item)

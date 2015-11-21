@@ -67,6 +67,5 @@ class ForumsSpider(CrawlSpider):
             # item['tag']='Lymphoma'
             item['topic'] = topic
             item['url']=url
-            logging.info(item.__str__)
             items.append(item)
         return items

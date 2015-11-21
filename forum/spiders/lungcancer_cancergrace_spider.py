@@ -30,13 +30,15 @@ class ForumsSpider(CrawlSpider):
                 ), follow=True),
         )
 
-    def cleanText(self, str):
-        soup = BeautifulSoup(str, 'html.parser')
-        return re.sub(" +|\n|\r|\t|\0|\x0b|\xa0",' ',soup.get_text()).strip()
+    def cleanText(self,text,printableOnly=True):
+        soup = BeautifulSoup(text,'html.parser')
+        text = soup.get_text();
+        text = re.sub("( +|\n|\r|\t|\0|\x0b|\xa0|\xbb|\xab)+",' ',text).strip()
+        if printableOnly:
+            return filter(lambda x: x in string.printable, text)
+        return text
 
 
-    # https://github.com/scrapy/dirbot/blob/master/dirbot/spiders/dmoz.py
-    # https://github.com/scrapy/dirbot/blob/master/dirbot/pipelines.py
     def parsePostsList(self,response):
         sel = Selector(response)
         posts = sel.xpath('//tr[contains(@id,"post")]')
@@ -51,10 +53,9 @@ class ForumsSpider(CrawlSpider):
             item['author'] = post.xpath('./td[@class="bbp-reply-author"]/a[2]/text()').extract_first()
             item['author_link'] = post.xpath('./td[@class="bbp-reply-author"]/a[2]/@href').extract_first()
             item['create_date'] = date.xpath('./td/text()').extract_first().strip()
-            item['post'] = self.cleanText(" ".join(post.xpath('./td[@class="bbp-reply-content"]/p/text()').extract()))
-            item['tag']=''
+            item['post'] = re.sub(r'\s+',' ',self.cleanText(" ".join(post.xpath('./td[@class="bbp-reply-content"]/p/text()').extract())))
+            # item['tag']=''
             item['topic'] = topic
             item['url']=url
-            logging.info(item.__str__)
             items.append(item)
         return items
