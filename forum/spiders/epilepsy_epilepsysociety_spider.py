@@ -62,7 +62,7 @@ class ForumsSpider(CrawlSpider):
             item['condition']=condition
             item['create_date'] = post.xpath('.//td[@class="gensmall" and @width="100%"]/div[@style="float: right;"]/text()').extract_first().strip()
 
-            message = post.xpath('.//div[@class="postbody"]/text()').extract()
+            message = " ".join(post.xpath('.//div[@class="postbody"]/text()').extract())
             item['post'] = self.cleanText(message)
 
             # item['post'] = re.sub('\s+',' '," ".join(post.xpath('.//div[@class="postbody"]/text()').extract()).replace("\t","").replace("\n","").replace("\r",""))
@@ -70,6 +70,5 @@ class ForumsSpider(CrawlSpider):
             # item['tag']=''
             item['topic'] = topic
             item['url']=url
-            logging.info(item.__str__)
             items.append(item)
         return items

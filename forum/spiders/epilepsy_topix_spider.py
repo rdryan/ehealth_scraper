@@ -65,12 +65,11 @@ class ForumsSpider(CrawlSpider):
                     item['author'] = post.xpath('.//a[@data-t="post-usersntxt"]/text()').extract_first()
                     item['author_link'] = post.xpath('.//a[@data-t="post-usersntxt"]/@href').extract_first()
                 item['condition']=condition
-                message = post.xpath('.//div[@class="x-post-content"]/text()').extract()
+                message = " ".join(post.xpath('.//div[@class="x-post-content"]/text()').extract())
                 item['post'] = self.cleanText(message)
                 # item['post'] = re.sub('\s+',' '," ".join(post.xpath('.//div[@class="x-post-content"]/text()').extract()).replace("\t","").replace("\n","").replace("\r",""))
                 # item['tag']=''
                 item['topic'] = topic
                 item['url']=url
-                logging.info(item.__str__)
                 items.append(item)
         return items
