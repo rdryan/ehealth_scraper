@@ -28,16 +28,19 @@ class ForumsSpider(CrawlSpider):
         ), follow=True),
 
     )
-    def cleanText(self,text):
+
+    def cleanText(self,text,printableOnly = True):
         soup = BeautifulSoup(text,'html.parser')
         text = soup.get_text();
         text = re.sub("( +|\n|\r|\t|\0|\x0b|\xa0|\xbb|\xab)+",' ',text).strip()
-        return text 
+        if printableOnly:
+            return filter(lambda x: x in string.printable, text)
+        return text
 
 
     def parsePostsList(self, response):
         items = []
-
+        condition = "multiple sclerosis"
         url = response.url
         subject = response.xpath(
             '//h1[@class="node-title"]/text()').extract()[0]
@@ -67,12 +70,12 @@ class ForumsSpider(CrawlSpider):
         for post in posts:
             author = post.xpath(
                 './/div[@class="node-author"]/span/text()').extract()[0]
-            author_link = "no"
+            author_link = ""
             create_date = post.xpath(
                 './/div[@class="node-date"]/time/text()').extract()[0]
             message = " ".join(post.xpath(
                 './/div[@class="field-item even"]//text()').extract())
-            message = cleanText(message)
+            message = self.cleanText(message)
 
             item['author'] = author
             item['author_link'] = author_link

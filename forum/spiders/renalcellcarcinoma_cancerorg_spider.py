@@ -69,26 +69,26 @@ class ForumsSpider(CrawlSpider):
         posts = sel.xpath('//*[@id="comments"]').css('.comment-forum')
         condition="renal cell carcinoma"
         items = []
-        topic = sel.xpath('//*[@id="squeeze"]/div/div/h2/text()').extract()[0].strip()
+        topic = self.cleanText(" ".join(sel.xpath('//*[@id="squeeze"]/div/div/h2/text()').extract()))
         url = response.url
 
         for post in posts:
             if len(post.css('.author'))==0:
                 continue
             item = PostItemsList()
-            item['author'] = self.parseText(str=post.css('.author').extract()[0].strip())
+            item['author'] = self.cleanText(str=post.css('.author').extract()[0].strip())
             item['author_link']=''
             item['condition']=condition
-            item['create_date'] = self.parseText(str=post.css('.date').extract()[0].strip()[2:])
-            post_msg=self.parseText(str=post.css('.content').extract()[0])
+            item['create_date'] = self.cleanText( " ".join(post.css('.date').xpath('./span/text()').extract()))
+            post_msg=self.cleanText(str=post.css('.content').extract()[0])
             item['post']=post_msg
-            item['tag']=''
+            # item['tag']=''
             item['topic'] = topic
             item['url']=url
             logging.info(post_msg)
             items.append(item)
         return items
 
-    def parseText(self, str):
+    def cleanText(self, str):
         soup = BeautifulSoup(str, 'html.parser')
         return re.sub(" +|\n|\r|\t|\0|\x0b|\xa0",' ',soup.get_text()).strip()

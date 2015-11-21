@@ -47,6 +47,7 @@ class ForumsSpider(Spider):
 
         el = Selector(text=self.driver.page_source).xpath('//ul[contains(@class, "pager")]/li/a/@href')
         for r in el.extract():
+            # logging.info("url: "+r)
             requestList.append(Request(response.urljoin(r)))
 
         if len(requestList)>0:
@@ -59,7 +60,7 @@ class ForumsSpider(Spider):
     def parsePost(self,response):
         items = []
         self.driver.get(response.url)
-        logging.info(response)
+        logging.info(">>> "+response.body)
         sel = Selector(text=self.driver.page_source)
         comment = sel.xpath('//*[@id="forum-comments"]')
         topic = sel.xpath('//div[contains(@class, "forum-post")]')[0].xpath('.//div[contains(@class, "forum-post-title")]/text()').extract()[0].strip()
@@ -80,7 +81,7 @@ class ForumsSpider(Spider):
         # item['tag']='Multiple Sclerosis'
         item['topic'] = topic
         item['url']=url
-        logging.info(post_msg)
+        # logging.info(post_msg)
         items.append(item)
 
         if len(comment)==0:
@@ -105,7 +106,7 @@ class ForumsSpider(Spider):
             # item['tag']='Multiple Sclerosis'
             item['topic'] = topic
             item['url']=url
-            logging.info(post_msg)
+            # logging.info(post_msg)
             items.append(item)
         return items
 

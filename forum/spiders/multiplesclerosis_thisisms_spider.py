@@ -47,7 +47,7 @@ class ForumsSpider(CrawlSpider):
         url = response.url
         subject = response.xpath('//div[@id="page-body"]/h2/a/text()')\
             .extract()[0]
-        condiiton="multiple sclerosis"
+        condition="multiple sclerosis"
         for post in posts:
             author = post.xpath(
                 './/p[@class="author"]/strong/a/text()').extract()[0]

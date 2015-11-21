@@ -48,9 +48,9 @@ class ForumsSpider(CrawlSpider):
     def parsePostsList(self, response):
         items = []
         url = response.url
-        condiiton="multiple sclerosis"
-        subject = response.xpath(
-            '//li[@class="navbit lastnavbit"]/span/text()').extract()
+        condition="multiple sclerosis"
+        subject = self.cleanText(" ".join(response.xpath(
+            '//li[@class="navbit lastnavbit"]/span/text()').extract()))
         posts = response.xpath(
             '//li[@class="postbit postbitim postcontainer old"]')
         for post in posts:
@@ -70,9 +70,9 @@ class ForumsSpider(CrawlSpider):
             item['author'] = author
             item['author_link'] = author_link
             item['condition'] = condition
-            item['create_date'] = create_date
+            item['create_date'] = self.cleanText(create_date)
             item['post'] = message
-            item['tag'] = 'epilepsy'
+            # item['tag'] = 'epilepsy'
             item['topic'] = subject
             item['url'] = url
 
