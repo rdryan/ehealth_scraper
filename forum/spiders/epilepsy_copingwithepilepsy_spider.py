@@ -68,12 +68,11 @@ class ForumsSpider(CrawlSpider):
             item['create_date'] = post.xpath('.//td[@class="thead"]/div[2]').extract_first()
             p = re.compile(r'<.*?>')
             item['create_date'] = p.sub('',item['create_date']).strip()
-            message = post.xpath('.//td[@class="alt1"]/div/text()').extract()
+            message = " ".join(post.xpath('.//td[@class="alt1"]/div/text()').extract())
             item['post'] = self.cleanText(message)
             # item['post'] = re.sub('\s+',' '," ".join(post.xpath('.//td[@class="alt1"]/div/text()').extract()).replace("\t","").replace("\n","").replace("\r",""))
             # item['tag'] =''
             item['topic'] = topic
             item['url'] = url
-            logging.info(item.__str__)
             items.append(item)
         return items
