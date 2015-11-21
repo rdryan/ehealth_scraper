@@ -9,6 +9,10 @@ from bs4 import BeautifulSoup
 import logging
 import string
 
+import dateparser
+import time
+# import datetime import datetime
+
 ## LOGGING to file
 #import logging
 #from scrapy.log import ScrapyFileLogObserver
@@ -52,6 +56,13 @@ class ForumsSpider(CrawlSpider):
         text = re.sub("( +|\n|\r|\t|\0|\x0b|\xa0|\xbb|\xab)+",' ',text).strip()
         return text 
 
+    def getDate(self,date_str):
+        # date_str="Fri Feb 12, 2010 1:54 pm"
+        date = dateparser.parse(date_str)
+        epoch = int(date.strftime('%s'))
+        create_date = time.strftime("%Y-%m-%d'T'%H:%M%S%z",  time.gmtime(epoch))
+        return create_date
+
     # https://github.com/scrapy/dirbot/blob/master/dirbot/spiders/dmoz.py
     # https://github.com/scrapy/dirbot/blob/master/dirbot/pipelines.py
     def parsePostsList(self,response):
@@ -70,8 +81,8 @@ class ForumsSpider(CrawlSpider):
                 item['author'] = author
                 item['author_link'] = " ".join(post.xpath('.//a[contains(@href,"viewprofile")]/@href').extract())
                 item['condition'] = condition
-                
-                item['create_date'] = self.cleanText(" ".join(post.xpath('.//div[contains(.//text(),"Posted")]/text()').extract()))
+                create_date = self.getDate(self.cleanText(" ".join(post.xpath('.//div[contains(.//text(),"Posted")]/text()').extract())))
+                item['create_date'] = create_date
                 item['post'] = message
                 # item['tag']='breastcancer'
                 item['topic'] = topic
