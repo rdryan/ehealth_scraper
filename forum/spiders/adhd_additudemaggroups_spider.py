@@ -64,8 +64,7 @@ class ForumsSpider(CrawlSpider):
             logging.error(">>>>>"+date_str)
             return date_str
             
-    # https://github.com/scrapy/dirbot/blob/master/dirbot/spiders/dmoz.py
-    # https://github.com/scrapy/dirbot/blob/master/dirbot/pipelines.py
+    # http://connect.additudemag.com/groups/topic/Best_advise_for_son_dealing_with_depression/
     def parsePostsList(self,response):
         sel = Selector(response)
         #posts = sel.css(".vt_post_holder")
@@ -84,7 +83,7 @@ class ForumsSpider(CrawlSpider):
             item['author'] = author
             item['author_link'] = author_link
             item['condition'] = condition
-            item['create_date']= self.cleanText(create_date.replace("|","").replace("on","").replace("at",""))
+            item['create_date']= self.getDate(self.cleanText(create_date.replace("|","").replace("on","").replace("at","")))
             item['post'] = self.cleanText(''.join(sel.xpath('.//div[@class="blog-post"]/p/text()').extract()))
             item['topic'] = topic
             item['url']=url
@@ -99,7 +98,7 @@ class ForumsSpider(CrawlSpider):
                 item['author'] = author
                 item['author_link'] = author_link
                 item['condition'] = condition
-                item['create_date']= create_date
+                item['create_date']= self.getDate(create_date)
                 item['post'] = self.cleanText(message = ''.join(post.xpath('.//div[@class="comment-text"]/text()').extract()))
                 item['topic'] = topic
                 item['url']=url

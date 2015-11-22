@@ -69,8 +69,7 @@ class ForumsSpider(CrawlSpider):
             logging.error(">>>>>"+date_str)
             return date_str
             
-    # https://github.com/scrapy/dirbot/blob/master/dirbot/spiders/dmoz.py
-    # https://github.com/scrapy/dirbot/blob/master/dirbot/pipelines.py
+    # http://www.adhdmarriage.com/content/have-any-non-adhd-partners-been-able-find-happiness-adhd-partner
     def parsePostsList(self,response):
         sel = Selector(response)
         #posts = sel.css(".vt_post_holder")
@@ -86,7 +85,7 @@ class ForumsSpider(CrawlSpider):
         item['condition'] = condition
         #create_date = ''.join(sel.xpath('//span[@class="post-meta"]/text()').extract()).replace("Posted by","").replace("to","")
         create_date = sel.xpath('//header[@class="node-header"]//time/text()').extract()[0]
-        item['create_date']= create_date
+        item['create_date']= self.getDate(create_date)
         
         message = ''.join(sel.xpath('//header[@class="node-header"]//div[@class="field-items"]//text()').extract())
         item['post'] = self.cleanText(message)
@@ -102,13 +101,12 @@ class ForumsSpider(CrawlSpider):
             item['author_link'] = ''
             item['condition'] = condition
             create_date = post.xpath('.//span[@class="date-time"]/text()').extract()[0]
-            item['create_date']= create_date
+            item['create_date']= self.getDate(create_date)
             
             message = ''.join(post.xpath('.//div[@class="comment-content"]//text()').extract())
             item['post'] = self.cleanText(message)
             # item['tag']='adhd'
             item['topic'] = topic
             item['url']=url
-            logging.info(item.__str__)
             items.append(item)
         return items

@@ -79,8 +79,7 @@ class ForumsSpider(CrawlSpider):
             logging.error(">>>>>"+date_str)
             return date_str
             
-    # https://github.com/scrapy/dirbot/blob/master/dirbot/spiders/dmoz.py
-    # https://github.com/scrapy/dirbot/blob/master/dirbot/pipelines.py
+    # http://www.dailystrength.org/c/Parents_of_Children_With_ADHD/forum/20424235-anyone-relate-any
     def parsePost(self,response):
         logging.info(response)
         sel = Selector(response)
@@ -94,7 +93,7 @@ class ForumsSpider(CrawlSpider):
         item['author'] = post.css('.username').xpath("./a").xpath("text()").extract()[0].strip()
         item['author_link']=response.urljoin(post.css('.username').xpath("./a/@href").extract()[0])
         item['condition']=condition
-        item['create_date']= self.cleanText(post.css('.discussion_text').xpath('./span/text()').extract()[0])
+        item['create_date']= self.getDate(self.cleanText(post.css('.discussion_text').xpath('./span/text()').extract()[0]))
         post_msg=self.cleanText(" ".join(post.css('.discussion_text').extract()))
         # soup = BeautifulSoup(post_msg, 'html.parser')
         # post_msg = re.sub(" +|\n|\r|\t|\0|\x0b|\xa0",' ',soup.get_text()).strip()
@@ -111,7 +110,7 @@ class ForumsSpider(CrawlSpider):
                 continue
             item['author'] = post.css('.username').xpath("./a").xpath("text()").extract()[0].strip()
             item['author_link']=response.urljoin(post.css('.username').xpath("./a/@href").extract()[0])
-            item['create_date']= self.cleanText(" ".join(post.xpath('./tr[1]/td[2]/div/table/tr/td/span[2]/text()').extract()))
+            item['create_date']= self.getDate(self.cleanText(" ".join(post.xpath('./tr[1]/td[2]/div/table/tr/td/span[2]/text()').extract())))
             item['post']=self.cleanText(" ".join(post.css('.discussion_text').extract()))
             # item['tag']=''
             item['topic'] = topic

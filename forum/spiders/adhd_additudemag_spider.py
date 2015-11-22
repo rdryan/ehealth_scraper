@@ -82,8 +82,8 @@ class ForumsSpider(CrawlSpider):
             item['author'] = self.cleanText(post.xpath('.//div[@class="largeLinks"]/a/text()').extract()[0])
             item['author_link'] = post.xpath('.//div[@class="largeLinks"]/a/@href').extract()[0]
             item['condition'] = condition
-            create_date = self.getDate(re.sub(r'("Posted:|\[\Ignore]")','',self.cleanText(''.join(post.xpath('.//td[@class="tableRowHeading"]//text()').extract()))))
-            item['create_date']= self.cleanText(create_date.replace("Ignore","").replace("[","").replace("]","").replace("Posted:",""),False)
+            create_date = getDate( cleanText( re.sub(r'(Posted:|\[|])','', ''.join(post.xpath('.//td[@class="tableRowHeading"]//text()').extract()) ).replace("Ignore","") ))
+            item['create_date']= create_date
             item['post'] = self.cleanText(''.join(post.xpath('.//div[@class="post"]//text()').extract()))
             # item['tag']='adhd'
             item['topic'] = topic

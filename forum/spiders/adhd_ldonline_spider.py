@@ -62,6 +62,7 @@ class ForumsSpider(CrawlSpider):
             logging.error(">>>>>"+date_str)
             return date_str
 
+    # http://www.ldonline.org/xarbb/topic/33120
     def topic_parse(self, response):
         items = []
         condition='adhd'
@@ -77,9 +78,9 @@ class ForumsSpider(CrawlSpider):
                 './/td[@class="xar-norm author"]/*/a/text()').extract()[0]
             author_link = post.xpath(
                 './/td[@class="xar-norm author"]/*/a/@href').extract()[0]
-            create_date = self.cleanText(post.xpath(
+            create_date = re.sub(r'^:','',self.cleanText(post.xpath(
                 './/span[@class="xar-sub"][contains(text(), "Posted")]/text()'
-            ).extract()[0].replace("Posted","").replace("Posted:","").replace("at",""))
+            ).extract()[0].replace("Posted","").replace("Posted:","").replace("at",",")))
             message = ''.join(post.xpath(
                 './/div[2]/p//text()'
             ).extract())
@@ -88,7 +89,7 @@ class ForumsSpider(CrawlSpider):
             item['author'] = author
             item['author_link'] = author_link
             item['condition'] = condition
-            item['create_date'] = create_date
+            item['create_date'] = self.getDate(create_date)
             item['post'] = self.cleanText(message)
             # item['tag'] = ''
             item['topic'] = subject
