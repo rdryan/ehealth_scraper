@@ -8,7 +8,8 @@ from selenium import webdriver
 from bs4 import BeautifulSoup
 import re
 import string
-
+import dateparser
+import time
 
 class HealthUnlocked(scrapy.Spider):
 	name = "chroniclymphocyticleukemia_healthunlocked_spider"
@@ -23,6 +24,16 @@ class HealthUnlocked(scrapy.Spider):
 		text = re.sub("( +|\n|\r|\t|\0|\x0b|\xa0|\xbb|\xab)+", ' ', text).strip()
 		return text 
 
+	def getDate(self,date_str):
+	    try:
+	        date = dateparser.parse(date_str)
+	        epoch = int(date.strftime('%s'))
+	        create_date = time.strftime("%Y-%m-%d'T'%H:%M%S%z",  time.gmtime(epoch))
+	        return create_date
+	    except Exception:
+	        logging.error(">>>>>"+date_str)
+	        return date_str
+            
 	def parse(self, response):
 		driver = webdriver.PhantomJS()
 		driver.get(response.url)

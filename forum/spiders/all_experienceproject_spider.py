@@ -9,6 +9,8 @@ from bs4 import BeautifulSoup
 import logging
 import string
 import time
+import dateparser
+import time
 
 class ForumsSpider(CrawlSpider):
     name = "all_experienceproject_spider"
@@ -31,14 +33,25 @@ class ForumsSpider(CrawlSpider):
         )
 
     def getDate(self,date_str):
-        result1 = re.compile(r"^[a-zA-Z][a-zA-Z][a-zA-Z]\s\d+$").match(date_str)
-        result2=re.compile(r"^\d+\s(hours|hrs) ago").match(date_str)
-        if result1:
-            return date_str+", 2015"
-        elif result2:
-            return time.strftime("%b %d, %Y")
-        else:
+        # date_str="Fri Feb 12, 2010 1:54 pm"
+        try:
+            date = dateparser.parse(date_str)
+            epoch = int(date.strftime('%s'))
+            create_date = time.strftime("%Y-%m-%d'T'%H:%M%S%z",  time.gmtime(epoch))
+            return create_date
+        except Exception:
+            logging.error(">>>>>"+date_str)
             return date_str
+            
+    # def getDate(self,date_str):
+    #     result1 = re.compile(r"^[a-zA-Z][a-zA-Z][a-zA-Z]\s\d+$").match(date_str)
+    #     result2=re.compile(r"^\d+\s(hours|hrs) ago").match(date_str)
+    #     if result1:
+    #         return date_str+", 2015"
+    #     elif result2:
+    #         return time.strftime("%b %d, %Y")
+    #     else:
+    #         return date_str
 
 
     def cleanText(self,text,printableOnly=True):

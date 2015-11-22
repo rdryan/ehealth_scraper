@@ -8,6 +8,8 @@ import re
 from bs4 import BeautifulSoup
 import logging
 import string
+import dateparser
+import time
 
 ## LOGGING to file
 #import logging
@@ -42,6 +44,17 @@ class ForumsSpider(CrawlSpider):
                     deny=(r'user_profile_*\.html',)
                 ), follow=True),
         )
+    
+    def getDate(self,date_str):
+        # date_str="Fri Feb 12, 2010 1:54 pm"
+        try:
+            date = dateparser.parse(date_str)
+            epoch = int(date.strftime('%s'))
+            create_date = time.strftime("%Y-%m-%d'T'%H:%M%S%z",  time.gmtime(epoch))
+            return create_date
+        except Exception:
+            logging.error(">>>>>"+date_str)
+            return date_str
 
     def cleanText(self,text):
         soup = BeautifulSoup(text,'html.parser')

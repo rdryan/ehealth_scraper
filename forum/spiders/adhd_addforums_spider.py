@@ -8,6 +8,8 @@ import re
 from bs4 import BeautifulSoup
 import logging
 import string
+import dateparser
+import time
 
 ## LOGGING to file
 #import logging
@@ -49,6 +51,17 @@ class ForumsSpider(CrawlSpider):
             return filter(lambda x: x in string.printable, text)
         return text
 
+    def getDate(self,date_str):
+        # date_str="Fri Feb 12, 2010 1:54 pm"
+        try:
+            date = dateparser.parse(date_str)
+            epoch = int(date.strftime('%s'))
+            create_date = time.strftime("%Y-%m-%d'T'%H:%M%S%z",  time.gmtime(epoch))
+            return create_date
+        except Exception:
+            logging.error(">>>>>"+date_str)
+            return date_str
+            
     # https://github.com/scrapy/dirbot/blob/master/dirbot/spiders/dmoz.py
     # https://github.com/scrapy/dirbot/blob/master/dirbot/pipelines.py
     def parsePostsList(self,response):
@@ -64,7 +77,7 @@ class ForumsSpider(CrawlSpider):
             item['author'] = ''.join(post.xpath('.//a[@class="bigusername"]/text()').extract())
             item['author_link'] = post.xpath('.//a[@class="bigusername"]/@href').extract()[0]
             item['condition'] = condition
-            item['create_date']= re.sub('^#\s+\d+\s','',self.cleanText(' '.join(post.xpath('.//td[@class="thead"]//text()').extract())) )
+            item['create_date']= self.getDate(re.sub('^#\s+\d+\s','',self.cleanText(' '.join(post.xpath('.//td[@class="thead"]//text()').extract()))))
             item['post'] = self.cleanText(' '.join(post.xpath('.//div[contains(@id,"post_message")]/text()').extract()))
             # item['tag']=''
             item['topic'] = topic

@@ -10,7 +10,6 @@ from scrapy.contrib.linkextractors import LinkExtractor
 from scrapy.selector import Selector
 from forum.items import PostItemsList
 import logging
-
 import lxml.html
 from lxml.etree import ParserError
 from lxml.cssselect import CSSSelector
@@ -18,6 +17,8 @@ import re
 from bs4 import BeautifulSoup
 import urlparse
 import string
+import dateparser
+import time
 
 ## LOGGING to file
 #import logging
@@ -50,6 +51,17 @@ class ForumsSpider(CrawlSpider):
                 ), follow=True),
         )
 
+    def getDate(self,date_str):
+        # date_str="Fri Feb 12, 2010 1:54 pm"
+        try:
+            date = dateparser.parse(date_str)
+            epoch = int(date.strftime('%s'))
+            create_date = time.strftime("%Y-%m-%d'T'%H:%M%S%z",  time.gmtime(epoch))
+            return create_date
+        except Exception:
+            logging.error(">>>>>"+date_str)
+            return date_str
+            
     def urlRemove(self,url,keyToRemove):
         urlcomponents = urlparse.urlparse(url)
         params=urlparse.parse_qs(urlcomponents.query)

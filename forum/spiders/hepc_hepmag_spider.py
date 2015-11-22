@@ -13,6 +13,8 @@ from bs4 import BeautifulSoup
 import urlparse
 import urllib
 import string
+import dateparser
+import time
 
 
 ## LOGGING to file
@@ -47,6 +49,17 @@ class ForumsSpider(CrawlSpider):
                 ), follow=True),
         )
     
+    def getDate(self,date_str):
+        # date_str="Fri Feb 12, 2010 1:54 pm"
+        try:
+            date = dateparser.parse(date_str)
+            epoch = int(date.strftime('%s'))
+            create_date = time.strftime("%Y-%m-%d'T'%H:%M%S%z",  time.gmtime(epoch))
+            return create_date
+        except Exception:
+            logging.error(">>>>>"+date_str)
+            return date_str
+
     def urlRemove(self,url,keyToFind):
         url_parts = list(urlparse.urlparse(url))
         query = dict(urlparse.parse_qsl(url_parts[4]))

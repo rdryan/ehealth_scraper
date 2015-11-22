@@ -6,6 +6,8 @@ import logging
 import re
 from bs4 import BeautifulSoup
 import string
+import dateparser
+import time
 
 class CancerForum(CrawlSpider):
     name = 'breastcancer_cancerforums_spider'
@@ -20,6 +22,17 @@ class CancerForum(CrawlSpider):
         Rule(LinkExtractor(restrict_xpaths='//a[@class="title"]',canonicalize=True),
              callback='parse_item', follow=True),
     )
+    
+    def getDate(self,date_str):
+        # date_str="Fri Feb 12, 2010 1:54 pm"
+        try:
+            date = dateparser.parse(date_str)
+            epoch = int(date.strftime('%s'))
+            create_date = time.strftime("%Y-%m-%d'T'%H:%M%S%z",  time.gmtime(epoch))
+            return create_date
+        except Exception:
+            logging.error(">>>>>"+date_str)
+            return date_str
 
     def cleanText(self,text):
         soup = BeautifulSoup(text,'html.parser')

@@ -8,6 +8,8 @@ import re
 import logging
 from bs4 import BeautifulSoup
 import string
+import dateparser
+import time
 ## LOGGING to file
 #import logging
 #from scrapy.log import ScrapyFileLogObserver
@@ -43,9 +45,16 @@ class ForumsSpider(CrawlSpider):
         text = re.sub("( +|\n|\r|\t|\0|\x0b|\xa0|\xbb|\xab)+",' ',text).strip()
         return text 
 
-    def parseText(self, str):
-        soup = BeautifulSoup(str, 'html.parser')
-        return re.sub(" +|\n|\r|\t|\0|\x0b|\xa0",' ',soup.get_text()).strip()
+    def getDate(self,date_str):
+        # date_str="Fri Feb 12, 2010 1:54 pm"
+        try:
+            date = dateparser.parse(date_str)
+            epoch = int(date.strftime('%s'))
+            create_date = time.strftime("%Y-%m-%d'T'%H:%M%S%z",  time.gmtime(epoch))
+            return create_date
+        except Exception:
+            logging.error(">>>>>"+date_str)
+            return date_str
 
     def parsePost(self,response):
         #logging.info(response)
@@ -59,13 +68,13 @@ class ForumsSpider(CrawlSpider):
         for post in posts:
             post_xp = post.xpath('./tr[2]/td[2]/div[2]')
             if not post_xp: continue
-            post_msg = self.parseText(str=post_xp.extract()[0])
+            post_msg = self.cleanText(" ".join(post_xp.extract()))
 
             item = PostItemsList()
             item['author'] = self.cleanText(post.xpath('./tr[2]/td[1]/div[starts-with(@id,"postmenu")]/a').extract()[0].encode('ascii'))
             item['author_link'] = "http://neurotalk.psychcentral.com/%s" % post.xpath('./tr[2]/td[1]/div[starts-with(@id,"postmenu")]/a/@href').extract()[0]
             item['condition'] = condition
-            item['create_date'] = self.parseText(str=post.xpath('./tr/td[1]').extract()[0])
+            item['create_date'] = self.cleanText(" ".join(post.xpath('./tr/td[1]').extract()))
             item['post'] = post_msg
             # item['tag'] = 'multiple-sclerosis'
             item['topic'] = topic

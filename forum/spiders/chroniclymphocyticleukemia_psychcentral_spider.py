@@ -5,7 +5,8 @@ import time
 from bs4 import BeautifulSoup
 import re
 import string
-
+import dateparser
+import time
 
 class PsychCentral(scrapy.Spider):
 	name = "chroniclymphocyticleukemia_psychcentral_spider"
@@ -33,13 +34,20 @@ class PsychCentral(scrapy.Spider):
 		return text 
 
 
+	def getDate(self,date_str):
+	    try:
+	        date = dateparser.parse(date_str)
+	        epoch = int(date.strftime('%s'))
+	        create_date = time.strftime("%Y-%m-%d'T'%H:%M%S%z",  time.gmtime(epoch))
+	        return create_date
+	    except Exception:
+	        logging.error(">>>>>"+date_str)
+	        return date_str
+ 
 	def get_all_data(self,response):
-
 		post_id = response.xpath('//td[contains(@class,"alt1")]/@id').extract_first().split("_")[-1]
-
 		date = [self.cleanText(x) for x in response.xpath('//a[contains(@name,"post'+post_id+'")]/../text()').extract()]
 		date = " ".join([x for x in date if x!=''])
-
 		post_text = response.css('.alt1').xpath('div[2]/text()').extract()
 		try:
 			post_text = str(post_text[1])

@@ -4,6 +4,8 @@ from forum.items import PostItemsList
 import re
 from bs4 import BeautifulSoup
 import string
+import dateparser
+import time
 
 class CancerCompass(scrapy.Spider):
 	name = "chroniclymphocyticleukemia_cancerorg_spider"
@@ -31,6 +33,17 @@ class CancerCompass(scrapy.Spider):
 			url = response.urljoin(next_page[0].extract())
 			yield scrapy.Request(url,callback=self.parse)
 
+
+	def getDate(self,date_str):
+		try:
+		    date = dateparser.parse(date_str)
+		    epoch = int(date.strftime('%s'))
+		    create_date = time.strftime("%Y-%m-%d'T'%H:%M%S%z",  time.gmtime(epoch))
+		    return create_date
+		except Exception:
+		    logging.error(">>>>>"+date_str)
+		    return date_str
+            
 	def get_all_data(self,response):
 		author_name_xpath = "//table[@class='node node-forum']//div[@class='author']/text()"
 		submitted_date_xpath = "//table[@class='node node-forum']//div[@class='submitted']/text()"

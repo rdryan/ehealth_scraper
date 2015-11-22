@@ -8,6 +8,7 @@ import re
 import logging
 from bs4 import BeautifulSoup
 import string
+import dateparser
 import time
 # import lxml.html
 # from lxml.etree import ParserError
@@ -61,17 +62,28 @@ class ForumsSpider(CrawlSpider):
         return text 
 
     def getDate(self,date_str):
-        # '7/11/2014 3:22 PM (GMT -7)'
-        result1 = re.compile(r"^yesterday").match(date_str)
-        result2=re.compile(r"^today").match(date_str)
-        yesterday = date.today() - timedelta(1)
-        if result1:
-            # 'create_date': u'Yesterday 10:51 AM (GMT -7)',
-            return time.strftime("%m/%d/%Y ")+date_str.replace("yesterday")
-        elif result2:
-            return yestrday.strftime("%m/%d/%Y ")+date_str.replace("today")
-        else:
+        # date_str="Fri Feb 12, 2010 1:54 pm"
+        try:
+            date = dateparser.parse(date_str)
+            epoch = int(date.strftime('%s'))
+            create_date = time.strftime("%Y-%m-%d'T'%H:%M%S%z",  time.gmtime(epoch))
+            return create_date
+        except Exception:
+            logging.error(">>>>>"+date_str)
             return date_str
+            
+    # def getDate(self,date_str):
+    #     # '7/11/2014 3:22 PM (GMT -7)'
+    #     result1 = re.compile(r"^yesterday").match(date_str)
+    #     result2=re.compile(r"^today").match(date_str)
+    #     yesterday = date.today() - timedelta(1)
+    #     if result1:
+    #         # 'create_date': u'Yesterday 10:51 AM (GMT -7)',
+    #         return time.strftime("%m/%d/%Y ")+date_str.replace("yesterday")
+    #     elif result2:
+    #         return yestrday.strftime("%m/%d/%Y ")+date_str.replace("today")
+    #     else:
+    #         return date_str
 
     # https://github.com/scrapy/dirbot/blob/master/dirbot/spiders/dmoz.py
     # https://github.com/scrapy/dirbot/blob/master/dirbot/pipelines.py

@@ -5,14 +5,26 @@ import time
 from bs4 import BeautifulSoup
 import re
 import string
+import dateparser
+import time
 
 class LymphomasSpider(scrapy.Spider):
-	name = "lymphoma_lymphomas_spider"
+	name = "lymphoma_lymphomasorg_spider"
 	allowed_domains = ["lymphomas.org.uk"]
 	start_urls = [
 		"http://www.lymphomas.org.uk/forum",
 	]
-	
+
+	def getDate(self,date_str):
+		try:
+		    date = dateparser.parse(date_str)
+		    epoch = int(date.strftime('%s'))
+		    create_date = time.strftime("%Y-%m-%d'T'%H:%M%S%z",  time.gmtime(epoch))
+		    return create_date
+		except Exception:
+		    logging.error(">>>>>"+date_str)
+		    return date_str
+
 	def cleanText(self, text):
 		soup = BeautifulSoup(text, 'html.parser')
 		text = soup.get_text();
