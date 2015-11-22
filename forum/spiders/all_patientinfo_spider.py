@@ -13,7 +13,7 @@ import dateparser
 import time
 
 class ForumsSpider(Spider):
-    name = "rheumatoid_arthritis_patientinfo_spider"
+    name = "all_patientinfo_spider"
     allowed_domains = ["patient.info"]
     start_urls = [
         "http://patient.info/forums/discuss/browse/epilepsy-801",
