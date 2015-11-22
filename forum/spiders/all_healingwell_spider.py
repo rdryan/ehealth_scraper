@@ -102,7 +102,7 @@ class ForumsSpider(CrawlSpider):
             item['author'] = post.css('.msgUser').xpath("./a[2]").xpath("text()").extract()[0]
             item['author_link'] = post.css('.msgUser').xpath("./a[2]/@href").extract()[0]
             item['condition'] = condition.lower()
-            item['create_date'] = re.sub(" +|\n|\r|\t|\0|\x0b|\xa0", ' ', response.css('td.msgThreadInfo').xpath('text()').extract()[0].replace("Posted ","")).strip().lower()
+            item['create_date'] = self.getDate(re.sub(" +|\n|\r|\t|\0|\x0b|\xa0", ' ', response.css('td.msgThreadInfo').xpath('text()').extract()[0].replace("Posted ","")).strip().lower())
             post_msg = self.cleanText(post.css('.PostMessageBody').extract()[0])
             item['post'] = post_msg
             # item['tag'] = ''

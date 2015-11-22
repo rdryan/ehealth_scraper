@@ -77,7 +77,7 @@ class ForumsSpider(CrawlSpider):
             item['condition'] = condition
             
             create_date = ''.join(post.xpath('.//p[@class="author"]/text()').extract()).replace('by','')
-            item['create_date'] = self.cleanText(create_date)
+            item['create_date'] = self.getDate(self.cleanText(create_date))
            
             message = ''.join(post.xpath('.//div[@class="content"]/text()').extract())
             item['post'] = self.cleanText(message)

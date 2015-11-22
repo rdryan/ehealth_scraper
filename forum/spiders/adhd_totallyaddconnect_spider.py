@@ -110,7 +110,7 @@ class ForumsSpider(CrawlSpider):
             item['author_link'] = post.xpath('.//a[@class="bbp-author-name"]/@href').extract_first()
             item['condition'] = condition
             create_date = ''.join(post.xpath('.//tr[@class="bbp-reply-header"]//text()').extract()).strip()
-            item['create_date']= self.getDate(self.cleanText(create_date).replace("at","")).strip()
+            item['create_date']= self.getDate(self.getDate(self.cleanText(create_date).replace("at","")).strip())
             
             message = ''.join(post.xpath('.//td[@class="bbp-reply-content"]//text()').extract())
             item['post'] = self.cleanText(message).replace("[Report This Post]","").strip()

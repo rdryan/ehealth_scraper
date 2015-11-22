@@ -51,6 +51,7 @@ class ForumsSpider(CrawlSpider):
                 ), follow=True),
         )
 
+
     def getDate(self,date_str):
         # date_str="Fri Feb 12, 2010 1:54 pm"
         try:
@@ -72,7 +73,7 @@ class ForumsSpider(CrawlSpider):
         urlcomponents.query = newparams
         return urlparse.urlunparse(urlcomponents)
 
-    def cleanText(self,text,printableOnly=True):
+    def cleanText(self,text,printableOnly = True):
         soup = BeautifulSoup(text,'html.parser')
         text = soup.get_text();
         text = re.sub("( +|\n|\r|\t|\0|\x0b|\xa0|\xbb|\xab)+",' ',text).strip()
@@ -80,8 +81,8 @@ class ForumsSpider(CrawlSpider):
             return filter(lambda x: x in string.printable, text)
         return text
 
-    # https://github.com/scrapy/dirbot/blob/master/dirbot/spiders/dmoz.py
-    # https://github.com/scrapy/dirbot/blob/master/dirbot/pipelines.py
+
+    # http://adderworld.ning.com/forum/topics/what-every-adhd-child-deserves
     def parsePostsList(self,response):
         try:
             document = lxml.html.fromstring(response.body)
@@ -100,7 +101,7 @@ class ForumsSpider(CrawlSpider):
         item['author'] = response.xpath('//div[@class="xg_module xg_module_with_dialog"]//ul[@class="navigation byline"]/li/a[contains(@href,"profile")]/text()').extract_first()
         item['author_link'] = response.xpath('//div[@class="xg_module xg_module_with_dialog"]//ul[@class="navigation byline"]/li/a[contains(@href,"profile")]/@href').extract_first()
         item['condition']=condition
-        item['create_date'] = self.cleanText(response.xpath('//div[@class="xg_module xg_module_with_dialog"]//ul[@class="navigation byline"]/li/a[@class="nolink"][2]/text()').extract_first().replace('on','').replace('in','').replace('at',','),False)
+        item['create_date'] = self.getDate(self.cleanText(response.xpath('//div[@class="xg_module xg_module_with_dialog"]//ul[@class="navigation byline"]/li/a[@class="nolink"][2]/text()').extract_first().replace('on','').replace('in','').replace('at',','),False))
         item['post'] = re.sub('\s+',' '," ".join(response.xpath('//div[@class="xg_module xg_module_with_dialog"]//div[@class="xg_user_generated"]/p/text()').extract()).replace("\t","").replace("\n","").replace("\r",""))
         # item['tag']='epilepsy'
         item['topic'] = topic
@@ -112,7 +113,7 @@ class ForumsSpider(CrawlSpider):
             item['author'] = post.xpath('./dt[@class="byline"]/a[contains(@href,"user")]/text()').extract_first()
             item['author_link'] = post.xpath('./dt[@class="byline"]/a[contains(@href,"user")]/@href').extract_first()
             item['condition']=condition
-            item['create_date'] = self.cleanText(post.xpath('./dt[@class="byline"]/span[@class="timestamp"]/text()').extract_first().replace('at',','),False)
+            item['create_date'] = self.getDate(self.cleanText(post.xpath('./dt[@class="byline"]/span[@class="timestamp"]/text()').extract_first().replace('at',','),False))
             item['post'] = re.sub('\s+',' '," ".join(post.xpath('.//div[@class="description"]/div[@class="xg_user_generated"]/p/text()').extract()).replace("\t","").replace("\n","").replace("\r",""))
             # item['tag']=''
             item['topic'] = topic

@@ -59,7 +59,7 @@ class ForumsSpider(CrawlSpider):
 
     def parsePostsList(self,response):
         sel = Selector(response)
-        condition=sel.xpath('//*[@id="community_header"]/div[1]/a[2]/text()').extract_first()
+        condition=" ".join(sel.xpath('//*[@id="community_header"]/div[1]/a[2]/text()').extract())
         posts = sel.xpath('//div[@class="post_message_container"]')
         items = []
         topic = response.xpath('//div[@class="question_title"]/text()').extract_first()
@@ -69,12 +69,15 @@ class ForumsSpider(CrawlSpider):
             item = PostItemsList()
             item['author'] = post.xpath('.//div[@class="post_byline"]/a/text()').extract_first()
             item['author_link'] = post.xpath('.//div[@class="post_byline"]/a/@href').extract_first()
-            item['condition']=condition.lower()
+            item['condition']=condition
             epoch_time = post.xpath("//span[contains(@class,'byline_date')]/@data-timestamp").extract()[0]
-            item['create_date']= time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(float(epoch_time)))
-            item['post'] =self.cleanText(" ".join(post.xpath('.//div[@class="post_message fonts_resizable"]/text()').extract()))
+            # item['create_date']= time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(float(epoch_time)))
+            item['create_date'] = self.getDate(epoch_time)
+            msg = self.cleanText(" ".join(post.xpath('.//div[@class="post_message fonts_resizable"]/text()').extract()))
+            item['post'] =msg
             item['topic'] = self.cleanText(topic)
             item['url']=url
             cnt+=1
+            logging.info(msg)
             items.append(item)
         return items
