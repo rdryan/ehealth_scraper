@@ -74,7 +74,7 @@ class ForumsSpider(CrawlSpider):
     def cleanText(self,text,printableOnly=True):
         soup = BeautifulSoup(text,'html.parser')
         text = soup.get_text();
-        text = re.sub("( +|\n|\r|\t|\0|\x0b|\xa0|\xbb|\xab)+",' ',text).strip()
+        text = re.sub("(-+| +|\n|\r|\t|\0|\x0b|\xa0|\xbb|\xab)+",' ',text).strip()
         if(printableOnly):
             return filter(lambda x: x in string.printable, text)
         return text 
@@ -94,7 +94,8 @@ class ForumsSpider(CrawlSpider):
         item['author'] = post.css('.username').xpath("./a").xpath("text()").extract()[0].strip()
         item['author_link']=response.urljoin(post.css('.username').xpath("./a/@href").extract()[0])
         item['condition'] = condition
-        item['create_date']= self.cleanText(" ".join(post.css('.discussion_text').xpath('./span/text()').extract()))
+        create_date= self.cleanText(" ".join(post.css('.discussion_text').xpath('./span/text()').extract()))
+        item['create_date']= self.getDate(create_date)
         item['post']=self.cleanText(" ".join(post.css('.discussion_text').xpath('text()').extract()))
         item['topic'] = topic
         item['url']=url
@@ -107,7 +108,8 @@ class ForumsSpider(CrawlSpider):
             item['author'] = post.css('.username').xpath("./a").xpath("text()").extract()[0].strip()
             item['author_link']=response.urljoin(post.css('.username').xpath("./a/@href").extract()[0])
             item['condition'] = condition
-            item['create_date']= self.cleanText(' '.join(post.xpath('./tr[1]/td[2]/div/table/tr/td/span[2]/text()').extract()))
+            create_date= self.cleanText(' '.join(post.xpath('./tr[1]/td[2]/div/table/tr/td/span[2]/text()').extract()))
+            item['create_date']= self.getDate(create_date)
             item['post']=self.cleanText(" ".join(post.css('.discussion_text').xpath('text()').extract()))
             item['topic'] = topic
             item['url']=url

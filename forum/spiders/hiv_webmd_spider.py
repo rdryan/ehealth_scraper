@@ -61,9 +61,13 @@ class ForumsSpider(CrawlSpider):
             logging.error(">>>>>"+date_str)
             return date_str
             
-    def cleanText(self, str):
-        soup = BeautifulSoup(str, 'html.parser')
-        return re.sub(" +|\n|\r|\t|\0|\x0b|\xa0",' ',soup.get_text()).strip() 
+    def cleanText(self,text,printableOnly=True):
+        soup = BeautifulSoup(text,'html.parser')
+        text = soup.get_text();
+        text = re.sub("(-+| +|\n|\r|\t|\0|\x0b|\xa0|\xbb|\xab)+",' ',text).strip()
+        if(printableOnly):
+            return filter(lambda x: x in string.printable, text)
+        return text 
 
     def parsePost(self,response):
         logging.info(response)
@@ -86,7 +90,7 @@ class ForumsSpider(CrawlSpider):
         date = post.css('.first_posted_fmt').extract()[0]
         date = date[date.find('DateDelta')+11:date.rfind("'")]
         item['condition'] = condition
-        item['create_date'] = date
+        item['create_date'] = self.getDate(date)
         # soup = BeautifulSoup(post_msg, 'html.parser')
         # post_msg = re.sub(" +|\n|\r|\t|\0|\x0b|\xa0",' ',soup.get_text()).strip()
         item['post']=self.cleanText(post.css('.post_fmt').extract()[0])
@@ -108,7 +112,7 @@ class ForumsSpider(CrawlSpider):
             date = post.css('.posted_fmt').extract()[0]
             date = date[date.find('DateDelta')+11:date.rfind("'")]
             item['condition'] = condition
-            item['create_date'] = date
+            item['create_date'] = self.getDate(date)
             # soup = BeautifulSoup(post_msg, 'html.parser')
             # post_msg = re.sub(" +|\n|\r|\t|\0|\x0b|\xa0",' ',soup.get_text()).strip()
             item['post']=self.cleanText(post.css('.post_fmt').extract()[0])

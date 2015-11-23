@@ -65,10 +65,10 @@ class ForumsSpider(CrawlSpider):
     def cleanText(self,text,printableOnly=True):
         soup = BeautifulSoup(text,'html.parser')
         text = soup.get_text();
-        text = re.sub("( +|\n|\r|\t|\0|\x0b|\xa0|\xbb|\xab)+",' ',text).strip()
-        if printableOnly:
+        text = re.sub("(-+| +|\n|\r|\t|\0|\x0b|\xa0|\xbb|\xab)+",' ',text).strip()
+        if(printableOnly):
             return filter(lambda x: x in string.printable, text)
-        return text
+        return text 
 
     def getDate(self,date_str):
         # date_str="Fri Feb 12, 2010 1:54 pm"
@@ -101,7 +101,8 @@ class ForumsSpider(CrawlSpider):
         item['author'] = response.xpath('//div[@class="xg_module xg_module_with_dialog"]//ul[@class="navigation byline"]/li/a[contains(@href,"profile")]/text()').extract_first()
         item['author_link'] = response.xpath('//div[@class="xg_module xg_module_with_dialog"]//ul[@class="navigation byline"]/li/a[contains(@href,"profile")]/@href').extract_first()
         item['condition']=condition
-        item['create_date'] = self.cleanText(response.xpath('//div[@class="xg_module xg_module_with_dialog"]//ul[@class="navigation byline"]/li/a[@class="nolink"][2]/text()').extract_first().replace('on','').replace('in','').replace('at',','),False)
+        create_date = self.cleanText(response.xpath('//div[@class="xg_module xg_module_with_dialog"]//ul[@class="navigation byline"]/li/a[@class="nolink"][2]/text()').extract_first().replace('on','').replace('in','').replace('at',','),False)
+        item['create_date'] = self.getDate(create_date)
         item['post'] = re.sub('\s+',' '," ".join(response.xpath('//div[@class="xg_module xg_module_with_dialog"]//div[@class="xg_user_generated"]/p/text()').extract()).replace("\t","").replace("\n","").replace("\r",""))
         # item['tag']='epilepsy'
         item['topic'] = topic
@@ -113,7 +114,8 @@ class ForumsSpider(CrawlSpider):
             item['author'] = post.xpath('./dt[@class="byline"]/a[contains(@href,"user")]/text()').extract_first()
             item['author_link'] = post.xpath('./dt[@class="byline"]/a[contains(@href,"user")]/@href').extract_first()
             item['condition']=condition
-            item['create_date'] = self.cleanText(post.xpath('./dt[@class="byline"]/span[@class="timestamp"]/text()').extract_first().replace('at',','),False)
+            create_date = self.cleanText(post.xpath('./dt[@class="byline"]/span[@class="timestamp"]/text()').extract_first().replace('at',','),False)
+            item['create_date'] = self.getDate(create_date)
             item['post'] = re.sub('\s+',' '," ".join(post.xpath('.//div[@class="description"]/div[@class="xg_user_generated"]/p/text()').extract()).replace("\t","").replace("\n","").replace("\r",""))
             # item['tag']=''
             item['topic'] = topic

@@ -72,7 +72,8 @@ class ForumsSpider(CrawlSpider):
             item['author'] = post.xpath('.//b[@class="postauthor"]/text()').extract_first()
             item['author_link']=post.xpath('.//div[@class="gensmall" and @style="float: left;"]/a/@href').extract_first()
             item['condition']=condition
-            item['create_date'] = post.xpath('.//td[@class="gensmall" and @width="100%"]/div[@style="float: right;"]/text()').extract_first().strip()
+            create_date = post.xpath('.//td[@class="gensmall" and @width="100%"]/div[@style="float: right;"]/text()').extract_first().strip()
+            item['create_date'] = self.getDate(create_date)
 
             message = " ".join(post.xpath('.//div[@class="postbody"]/text()').extract())
             item['post'] = self.cleanText(message)

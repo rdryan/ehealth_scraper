@@ -51,10 +51,12 @@ class ForumsSpider(CrawlSpider):
             logging.error(">>>>>"+date_str)
             return date_str
             
-    def cleanText(self,text):
+    def cleanText(self,text,printableOnly=True):
         soup = BeautifulSoup(text,'html.parser')
         text = soup.get_text();
-        text = re.sub("( +|\n|\r|\t|\0|\x0b|\xa0|\xbb|\xab)+",' ',text).strip()
+        text = re.sub("(-+| +|\n|\r|\t|\0|\x0b|\xa0|\xbb|\xab)+",' ',text).strip()
+        if(printableOnly):
+            return filter(lambda x: x in string.printable, text)
         return text 
 
     def parseText(self, str):
@@ -81,9 +83,11 @@ class ForumsSpider(CrawlSpider):
             create_date_xp = post.xpath('./div[2]/div[3]/span')
             item['condition'] = condition
             if create_date_xp:
-                item['create_date'] = self.parseText(str=create_date_xp.extract()[0]).replace('replied ','')
+                create_date = self.parseText(str=create_date_xp.extract()[0]).replace('replied ','')
+                item['create_date'] = self.getDate(create_date)
             else:
-                item['create_date'] = self.parseText(str=post.xpath('./div/div[3]/div/div').extract()[0])
+                create_date = self.parseText(str=post.xpath('./div/div[3]/div/div').extract()[0])
+                item['create_date'] = self.getDate(create_date)
             item['post'] = post_msg
             item['tag'] = 'multiple-sclerosis'
             item['topic'] = topic

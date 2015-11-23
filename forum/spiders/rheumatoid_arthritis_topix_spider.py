@@ -83,7 +83,8 @@ class ForumsSpider(CrawlSpider):
             else:
                 continue
             item['condition'] = condition
-            item['create_date']= self.parseText(str=post.css('.x-comment-info').extract()[0])
+            create_date= self.parseText(str=post.css('.x-comment-info').extract()[0])
+            item['create_date']= self.getDate(create_date)
             post_msg= self.parseText(str=post.css('.x-post-content').extract()[0])
             item['post']=post_msg
             # item['tag']='rheumatoid arthritis'

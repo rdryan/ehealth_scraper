@@ -71,10 +71,12 @@ class ForumsSpider(CrawlSpider):
         return urlparse.urlunparse(url_parts)
     
 
-    def cleanText(self,text):
+    def cleanText(self,text,printableOnly=True):
         soup = BeautifulSoup(text,'html.parser')
         text = soup.get_text();
-        text = re.sub("( +|\n|\r|\t|\0|\x0b|\xa0|\xbb|\xab)+",' ',text).strip()
+        text = re.sub("(-+| +|\n|\r|\t|\0|\x0b|\xa0|\xbb|\xab)+",' ',text).strip()
+        if(printableOnly):
+            return filter(lambda x: x in string.printable, text)
         return text 
     
     # https://github.com/scrapy/dirbot/blob/master/dirbot/spiders/dmoz.py
@@ -95,7 +97,8 @@ class ForumsSpider(CrawlSpider):
             post['author'] = poster.xpath("./h4/a/text()")[0]
             post['author_link'] = poster.xpath("./h4/a/@href")[0]
             post['condition'] = condition
-            post['create_date'] = self.cleanText(" ".join(keyinfo.cssselect('.smalltext')[0].xpath("text()")))
+            create_date = self.cleanText(" ".join(keyinfo.cssselect('.smalltext')[0].xpath("text()")))
+            post['create_date'] = self.getDate(create_date)
             post['topic'] = keyinfo.cssselect('h5')[0].xpath("./a/text()")[0]
             post['post'] = self.cleanText(" ".join(postWrapper.cssselect(".post")[0].xpath("./div/text()")))
             post['url'] = self.urlRemove(response.url,"PHPSESSID")

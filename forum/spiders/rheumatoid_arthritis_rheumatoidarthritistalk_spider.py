@@ -82,7 +82,8 @@ class ForumsSpider(CrawlSpider):
                 item['author_link']=response.urljoin(post.css('.userText').xpath('./a/@href').extract()[0])
             else:
                 continue
-            item['create_date']= self.parseText(str=post.css('.DateTime').extract()[0])
+            create_date= self.parseText(str=post.css('.DateTime').extract()[0])
+            item['create_date']= self.getDate(create_date)
             post_msg= self.parseText(str=post.css('.messageText').extract()[0])
             item['post']=post_msg
             # item['tag']='rheumatoid arthritis'

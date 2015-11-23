@@ -66,7 +66,7 @@ class ForumsSpider(CrawlSpider):
             item['author'] = post.xpath('.//div[contains(@id,"postmenu")]/text()').extract_first().strip()
             item['author_link'] = ''
             item['condition'] = condition
-            item['create_date'] = post.xpath('.//td[@class="thead"][1]').extract_first()
+            item['create_date'] = self.getDate(post.xpath('.//td[@class="thead"][1]').extract_first())
             p = re.compile(r'<.*?>')
             item['create_date'] = p.sub('',item['create_date']).strip()
 

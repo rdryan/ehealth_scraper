@@ -74,7 +74,8 @@ class ForumsSpider(CrawlSpider):
         item['author'] = response.xpath('//ul[@class="navigation byline"]/li/a[contains(@href,"profile")]/text()').extract_first()
         item['author_link'] = response.xpath('//ul[@class="navigation byline"]/li/a[contains(@href,"profile")]/@href').extract_first()
         item['condition'] = condition
-        item['create_date'] = response.xpath('//div[@class="xg_module xg_module_with_dialog"]//ul[@class="navigation byline"]/li/a[@class="nolink"][2]/text()').extract_first().replace('on','').replace('in','').strip()
+        create_date = response.xpath('//div[@class="xg_module xg_module_with_dialog"]//ul[@class="navigation byline"]/li/a[@class="nolink"][2]/text()').extract_first().replace('on','').replace('in','').strip()
+        item['create_date'] = self.getDate(create_date)
         
         message = " ".join(response.xpath('//div[@class="xg_module xg_module_with_dialog"]//div[@class="xg_user_generated"]/p/text()').extract())
         if not message:
@@ -96,7 +97,8 @@ class ForumsSpider(CrawlSpider):
             item['author'] = post.xpath('./dt[@class="byline"]/a[contains(@href,"user")]/text()').extract_first()
             item['author_link'] = post.xpath('./dt[@class="byline"]/a[contains(@href,"user")]/@href').extract_first()
             item['condition'] = condition
-            item['create_date'] = post.xpath('./dt[@class="byline"]/span[@class="timestamp"]/text()').extract_first()
+            create_date = post.xpath('./dt[@class="byline"]/span[@class="timestamp"]/text()').extract_first()
+            item['create_date'] = self.getDate(create_date)
             message = " ".join(post.xpath('.//div[@class="description"]/div[@class="xg_user_generated"]/p/text()').extract())
             if not message:
                 message  = " ".join(post.xpath('.//div[@class="description"]/div[@class="xg_user_generated"]/text()').extract())

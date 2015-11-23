@@ -25,11 +25,13 @@ class LymphomasSpider(scrapy.Spider):
 		    logging.error(">>>>>"+date_str)
 		    return date_str
 
-	def cleanText(self, text):
-		soup = BeautifulSoup(text, 'html.parser')
-		text = soup.get_text();
-		text = re.sub("( +|\n|\r|\t|\0|\x0b|\xa0|\xbb|\xab)+", ' ', text).strip()
-		return text 
+    def cleanText(self,text,printableOnly=True):
+        soup = BeautifulSoup(text,'html.parser')
+        text = soup.get_text();
+        text = re.sub("(-+| +|\n|\r|\t|\0|\x0b|\xa0|\xbb|\xab)+",' ',text).strip()
+        if(printableOnly):
+            return filter(lambda x: x in string.printable, text)
+        return text 
 
 
 	def parse(self,response):
@@ -64,7 +66,7 @@ class LymphomasSpider(scrapy.Spider):
 		item['author'] = response.xpath(author_name_xpath).extract()[0]
 		item['author_link'] = author_link
 		item['condition']=condition
-		item['create_date'] = response.xpath(author_date_posted_xpath).extract()[0]
+		item['create_date'] = self.getDate(response.xpath(author_date_posted_xpath).extract()[0])
 		item['post'] = self.cleanText(" ".join(response.xpath(author_text_xpath).extract()))
 		item['topic'] = topic
 		item['url'] = response.url

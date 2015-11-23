@@ -78,7 +78,8 @@ class ForumsSpider(CrawlSpider):
             item['author'] = self.parseText(" ".join(post.css('.user-name').xpath('./a').extract()))
             item['author_link']=response.urljoin(post.css('.user-name').xpath('./a/@href').extract()[0])
             item['condition']=condition
-            item['create_date'] = self.parseText(post.css('.post-date').extract()[0]).replace("on","").strip()
+            create_date = self.parseText(post.css('.post-date').extract()[0]).replace("on","").strip()
+            item['create_date'] = self.getDate(create_date)
             post_msg=self.parseText(str=post.css('.post-content ').extract()[0])
             item['post']=post_msg
             # item['tag']=''

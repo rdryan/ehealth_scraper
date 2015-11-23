@@ -91,7 +91,7 @@ class ForumsSpider(CrawlSpider):
             soup = BeautifulSoup(date, 'html.parser')
             date=re.sub(" +|\n|\r|\t|\0|\x0b|\xa0",' ',soup.get_text()).strip()
             item['condition']=condition
-            item['create_date']=date
+            item['create_date']= self.getDate(date)
             # soup = BeautifulSoup(post_msg, 'html.parser')
             # post_msg = re.sub(" +|\n|\r|\t|\0|\x0b|\xa0",' ',soup.get_text()).strip()
             item['post']=self.cleanText(post.css('.postcontent').extract()[0])

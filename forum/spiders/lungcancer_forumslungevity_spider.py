@@ -54,10 +54,12 @@ class ForumsSpider(CrawlSpider):
             logging.error(">>>>>"+date_str)
             return date_str
             
-    def cleanText(self,text):
+    def cleanText(self,text,printableOnly=True):
         soup = BeautifulSoup(text,'html.parser')
         text = soup.get_text();
-        text = re.sub("( +|\n|\r|\t|\0|\x0b|\xa0|\xbb|\xab)+",' ',text).strip()
+        text = re.sub("(-+| +|\n|\r|\t|\0|\x0b|\xa0|\xbb|\xab)+",' ',text).strip()
+        if(printableOnly):
+            return filter(lambda x: x in string.printable, text)
         return text 
 
     def parsePostsList(self,response):
@@ -73,7 +75,7 @@ class ForumsSpider(CrawlSpider):
             item['author'] = self.cleanText(''.join(post.xpath('.//span[@class="author vcard"]/text()').extract()))
             item['author_link'] = ''
             item['condition'] = condition
-            item['create_date'] = ''.join(post.xpath('.//abbr[@class="published"]/text()').extract())
+            item['create_date'] = self.getDate(''.join(post.xpath('.//abbr[@class="published"]/text()').extract()))
             
             message = ''.join(post.xpath('.//div[@class="post entry-content "]//text()').extract())
             item['post'] = self.cleanText(message)

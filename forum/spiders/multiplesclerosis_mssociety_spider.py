@@ -88,7 +88,8 @@ class ForumsSpider(Spider):
             item['author']=''
             item['author_link']=''
         item['condition'] = condition
-        item['create_date']= self.parseText(str=post.xpath('./div[1]/div').extract()[0])
+        create_date= self.parseText(str=post.xpath('./div[1]/div').extract()[0])
+        item['create_date']= self.getDate(create_date)
         post_msg= self.parseText(str=post.css('.forum-post-content').extract()[0])
         item['post']=post_msg
         # item['tag']='Multiple Sclerosis'
@@ -113,7 +114,8 @@ class ForumsSpider(Spider):
             else:
                 continue
             item['condition'] = condition
-            item['create_date']= self.parseText(str=post.xpath('./div[1]/div').extract()[0])
+            create_date= self.parseText(str=post.xpath('./div[1]/div').extract()[0])
+            item['create_date']= self.getDate(create_date)
             post_msg= self.parseText(str=post.css('.forum-post-content').extract()[0])
             item['post']=post_msg
             # item['tag']='Multiple Sclerosis'

@@ -47,10 +47,12 @@ class ForumsSpider(CrawlSpider):
             logging.error(">>>>>"+date_str)
             return date_str
             
-    def cleanText(self,text):
+    def cleanText(self,text,printableOnly=True):
         soup = BeautifulSoup(text,'html.parser')
         text = soup.get_text();
-        text = re.sub("( +|\n|\r|\t|\0|\x0b|\xa0|\xbb|\xab)+",' ',text).strip()
+        text = re.sub("(-+| +|\n|\r|\t|\0|\x0b|\xa0|\xbb|\xab)+",' ',text).strip()
+        if(printableOnly):
+            return filter(lambda x: x in string.printable, text)
         return text 
 
     def parseText(self, str):
@@ -71,7 +73,8 @@ class ForumsSpider(CrawlSpider):
         item['author'] = self.cleanText(post_info.xpath('//*/li[@class="by"]/a').extract()[0])
         item['author_link'] = post_info.xpath('//*/li[@class="by"]/a/@href').extract()[0]
         item['condition'] = condition
-        item['create_date'] = self.cleanText(post_info.xpath('//*/ul/li[@class="by"]').extract()[0]).split(u'\xb7')[1].strip()
+        create_date = self.cleanText(post_info.xpath('//*/ul/li[@class="by"]').extract()[0]).split(u'\xb7')[1].strip()
+        item['create_date'] = self.getDate(create_date)
         item['post'] = post_info.xpath('//*[@class="post-body"]').extract()[0]
         # item['tag'] = 'multiple-sclerosis'
         item['topic'] = topic
@@ -89,7 +92,8 @@ class ForumsSpider(CrawlSpider):
             item['author'] = self.cleanText(post.xpath('./div/ul/li[1]/a').extract()[0])
             item['author_link'] = post.xpath('./div/ul/li[1]/a/@href').extract()[0]
             item['condition'] = condition
-            item['create_date'] = self.cleanText(post.xpath('./div/ul/li[3]').extract()[0])
+            create_date = self.cleanText(post.xpath('./div/ul/li[3]').extract()[0])
+            item['create_date'] = self.getDate(create_date)
             item['post'] = post_msg
             # item['tag'] = 'multiple-sclerosis'
             item['topic'] = topic

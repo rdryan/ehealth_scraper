@@ -79,7 +79,8 @@ class ForumsSpider(CrawlSpider):
         item = PostItemsList()
         item['author'] = self.parseText(str=sel.css('.content-primary-post').xpath('./div[1]/ul/li[1]/a').extract()[0].strip())
         item['author_link']=response.urljoin(sel.css('.content-primary-post').xpath('./div[1]/ul/li[1]/a/@href').extract()[0])
-        item['create_date'] = self.parseText(sel.css('.content-primary-post').xpath('./div[1]/ul/li[1]/text()').extract()[1].split('\n')[1].strip()[1:])
+        create_date = self.parseText(sel.css('.content-primary-post').xpath('./div[1]/ul/li[1]/text()').extract()[1].split('\n')[1].strip()[1:])
+        item['create_date'] = self.getDate(create_date)
         post_msg=self.parseText(str=sel.css('.content-primary-post').xpath('./div[2]/p').extract()[0])
         item['post']=post_msg
         # item['tag']='rheumatoid arthritis'
@@ -98,7 +99,8 @@ class ForumsSpider(CrawlSpider):
             else:
                 item['author'] =self.parseText(str=post.css('.post-info').xpath('./ul/li').extract()[0])
                 item['author_link']= ''
-            item['create_date'] = self.parseText(str=post.css('.post-info').xpath('./ul/li[3]').extract()[0])
+            create_date = self.parseText(str=post.css('.post-info').xpath('./ul/li[3]').extract()[0])
+            item['create_date'] = self.getDate(create_date)
             post_msg=self.parseText(str=post.xpath('./p').extract()[0])
             item['post']=post_msg
             # item['tag']='rheumatoid arthritis'

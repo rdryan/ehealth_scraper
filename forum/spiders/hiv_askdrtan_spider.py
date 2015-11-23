@@ -92,10 +92,12 @@ class ForumsSpider(Spider):
         self.driver.close()
 
 
-    def cleanText(self,text):
+    def cleanText(self,text,printableOnly=True):
         soup = BeautifulSoup(text,'html.parser')
         text = soup.get_text();
-        text = re.sub("( +|\n|\r|\t|\0|\x0b|\xa0|\xbb|\xab)+",' ',text).strip()
+        text = re.sub("(-+| +|\n|\r|\t|\0|\x0b|\xa0|\xbb|\xab)+",' ',text).strip()
+        if(printableOnly):
+            return filter(lambda x: x in string.printable, text)
         return text 
 
     # https://github.com/scrapy/dirbot/blob/master/dirbot/spiders/dmoz.py
@@ -130,7 +132,7 @@ class ForumsSpider(Spider):
         item['author'] = self.cleanText(sel.xpath('//*[@id="content"]/table/tbody/tr[2]/td/div[1]').extract()[0])
         item['author_link']=""
         item['condition'] = condition
-        item['create_date'] = date
+        item['create_date'] = self.getDate(date)
         post_msg = sel.xpath('//*[@id="content"]/table/tbody/tr[2]/td/p').extract()[0]
         soup = BeautifulSoup(post_msg, 'html.parser')
         post_msg = re.sub(" +|\n|\r|\t|\0|\x0b|\xa0",' ',soup.get_text()).strip()

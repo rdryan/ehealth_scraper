@@ -44,10 +44,13 @@ class ForumsSpider(CrawlSpider):
             logging.error(">>>>>"+date_str)
             return date_str
             
-    def cleanText(self, str):
-        soup = BeautifulSoup(str, 'html.parser')
-        return re.sub(" +|\n|\r|\t|\0|\x0b|\xa0",' ',soup.get_text()).strip()
-
+    def cleanText(self,text,printableOnly=True):
+        soup = BeautifulSoup(text,'html.parser')
+        text = soup.get_text();
+        text = re.sub("(-+| +|\n|\r|\t|\0|\x0b|\xa0|\xbb|\xab)+",' ',text).strip()
+        if(printableOnly):
+            return filter(lambda x: x in string.printable, text)
+        return text 
 
     # https://github.com/scrapy/dirbot/blob/master/dirbot/spiders/dmoz.py
     # https://github.com/scrapy/dirbot/blob/master/dirbot/pipelines.py
@@ -63,7 +66,8 @@ class ForumsSpider(CrawlSpider):
             item['author'] = post.xpath('.//td[@class="frm_post_infopanel"]/span[@style="font-weight:bold"]/text()').extract_first()
             item['author_link'] = ''
             item['condition'] = condition
-            item['create_date'] = post.xpath('.//td[@class="frm_post_bar"]/div[@style="float:left"]/text()').extract_first()
+            create_date = post.xpath('.//td[@class="frm_post_bar"]/div[@style="float:left"]/text()').extract_first()
+            item['create_date'] = self.getDate(create_date)
             item['post'] = self.cleanText(" ".join(post.xpath('.//td[@class="frm_post_message"]//text()').extract()))
             item['tag']=''
             item['topic'] = topic

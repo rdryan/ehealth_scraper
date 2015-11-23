@@ -48,9 +48,13 @@ class ForumsSpider(CrawlSpider):
                 ), follow=True),
         )
 
-    def cleanText(self, str):
-        soup = BeautifulSoup(str, 'html.parser')
-        return re.sub(" +|\n|\r|\t|\0|\x0b|\xa0",' ',soup.get_text()).strip()
+    def cleanText(self,text,printableOnly=True):
+        soup = BeautifulSoup(text,'html.parser')
+        text = soup.get_text();
+        text = re.sub("(-+| +|\n|\r|\t|\0|\x0b|\xa0|\xbb|\xab)+",' ',text).strip()
+        if(printableOnly):
+            return filter(lambda x: x in string.printable, text)
+        return text 
 
     def getDate(self,date_str):
         # date_str="Fri Feb 12, 2010 1:54 pm"
@@ -79,7 +83,7 @@ class ForumsSpider(CrawlSpider):
         item['author_link']=""
         date = sel.xpath('//*[@id="maincontent_forums"]/div[4]/table/tr[1]/td[3]/p[1]/text()').extract()[0]
         item['condition']=condition
-        item['create_date']=date
+        item['create_date']=self.getDate(date)
         post_msg=sel.xpath('//*[@id="maincontent_forums"]/div[4]/table/tr[1]/td[3]/p[3]').extract()[0]
         # soup = BeautifulSoup(post_msg, 'html.parser')
         # post_msg = re.sub(" +|\n|\r|\t|\0|\x0b|\xa0",' ',soup.get_text()).strip()
@@ -94,7 +98,7 @@ class ForumsSpider(CrawlSpider):
         item['author'] = sel.xpath('//*[@id="response"]/h1/text()').extract()[0]
         item['author_link']=""
         item['condition'] = condition
-        item['create_date'] = date
+        item['create_date'] = self.getDate(date)
         post_msg = self.cleanText(sel.xpath('//*[@id="response"]/p').extract()[0])
         item['post']=post_msg
         # item['tag']='hiv'

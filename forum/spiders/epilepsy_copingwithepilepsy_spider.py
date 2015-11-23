@@ -79,7 +79,7 @@ class ForumsSpider(CrawlSpider):
             item['condition']=condition
             item['create_date'] = post.xpath('.//td[@class="thead"]/div[2]').extract_first()
             p = re.compile(r'<.*?>')
-            item['create_date'] = p.sub('',item['create_date']).strip()
+            item['create_date'] = self.getDate(p.sub('',item['create_date']).strip())
             message = " ".join(post.xpath('.//td[@class="alt1"]/div/text()').extract())
             item['post'] = self.cleanText(message)
             # item['post'] = re.sub('\s+',' '," ".join(post.xpath('.//td[@class="alt1"]/div/text()').extract()).replace("\t","").replace("\n","").replace("\r",""))

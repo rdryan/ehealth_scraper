@@ -92,7 +92,7 @@ class HealthUnlocked(scrapy.Spider):
 		item['author'] = author_username
 		item['author_link'] = author_link
 		item['condition']=condition
-		item['create_date'] = posted_date
+		item['create_date'] = self.getDate(posted_date)
 		item['post'] = author_all_text
 		item['topic'] = topic
 		item['url'] = response.url

@@ -32,10 +32,12 @@ class ForumsSpider(CrawlSpider):
         )
 
 
-    def cleanText(self,text):
+    def cleanText(self,text,printableOnly=True):
         soup = BeautifulSoup(text,'html.parser')
         text = soup.get_text();
-        text = re.sub("( +|\n|\r|\t|\0|\x0b|\xa0|\xbb|\xab)+",' ',text).strip()
+        text = re.sub("(-+| +|\n|\r|\t|\0|\x0b|\xa0|\xbb|\xab)+",' ',text).strip()
+        if(printableOnly):
+            return filter(lambda x: x in string.printable, text)
         return text 
 
     def getDate(self,date_str):
@@ -61,7 +63,8 @@ class ForumsSpider(CrawlSpider):
         item['author'] = response.xpath('.//p[@class="username"]/a/text()').extract_first()
         item['author_link'] = response.xpath('.//p[@class="username"]/a/@href').extract_first()
         item['condition'] = condition
-        item['create_date'] = response.xpath('.//div[contains(@class, "discussion_text")]/span/text()').extract_first().replace(u'Posted on','').strip()  
+        create_date = response.xpath('.//div[contains(@class, "discussion_text")]/span/text()').extract_first().replace(u'Posted on','').strip()  
+        item['create_date'] = self.getDate(create_date)
         item['post'] = self.cleanText(" ".join(response.xpath('.//div[contains(@class, "discussion_text")]/text()').extract()))
         item['topic'] = topic.strip()
         item['url']=url
@@ -75,7 +78,8 @@ class ForumsSpider(CrawlSpider):
                 item['author'] = item['author'].strip()
                 item['author_link'] = post.xpath('.//p[@class="username"]/a/@href').extract_first()
                 item['condition'] = condition
-                item['create_date'] = post.xpath('.//span[@class="graytext"][2]/text()').extract_first().strip()
+                create_date = post.xpath('.//span[@class="graytext"][2]/text()').extract_first().strip()
+                item['create_date'] = self.getDate(create_date)
                 item['post'] = self.cleanText(" ".join(post.xpath('.//div[contains(@class, "discussion_text")]/text()').extract()))
                 item['topic'] = topic.strip()
                 item['url']=url

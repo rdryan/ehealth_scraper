@@ -76,7 +76,7 @@ class EpilepsyBreastcancerSpiderSpider(CrawlSpider):
         item['author'] = original_author
         item['author_link'] = original_author_link
         item['condition'] = condition
-        item['create_date'] = original_create_date
+        item['create_date'] = self.getDate(original_create_date)
         item['post'] = self.cleanText(original_message)
         # item['tag'] = ''
         item['topic'] = subject
@@ -99,7 +99,7 @@ class EpilepsyBreastcancerSpiderSpider(CrawlSpider):
             item['author'] = author
             item['author_link'] = author_link
             item['condition'] = condition
-            item['create_date'] = create_date
+            item['create_date'] = self.getDate(create_date)
             item['post'] = self.cleanText(message)
             # item['tag'] = ''
             item['topic'] = subject

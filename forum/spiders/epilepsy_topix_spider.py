@@ -69,8 +69,9 @@ class ForumsSpider(CrawlSpider):
         condition='epilepsy'
         for post in posts:
             item = PostItemsList()
-            item['create_date'] = post.xpath('.//span[@class="x-post-time"]/text()').extract_first()
-            if item['create_date']:
+            create_date = post.xpath('.//span[@class="x-post-time"]/text()').extract_first()
+            if create_date:
+                item['create_date'] = self.getDate(create_date)
                 item['author'] = post.xpath('.//div[@class="authorsn x-author"]/text()').extract_first()
                 item['author_link'] = '' 
                 if not item['author']:

@@ -63,7 +63,8 @@ class ForumsSpider(CrawlSpider):
         item['author'] = response.xpath('.//table[@class="node node-forum"]//div[@class="author"]/text()').extract_first()
         item['author_link'] = ''
         item['condition'] = condition
-        item['create_date'] = response.xpath('.//table[@class="node node-forum"]//div[@class="date"]/span/text()').extract_first()
+        create_date = response.xpath('.//table[@class="node node-forum"]//div[@class="date"]/span/text()').extract_first()
+        item['create_date'] = self.getDate(create_date)
         item['post'] = re.sub('\s+',' '," ".join(response.xpath('.//table[@class="node node-forum"]//div[@class="content"]/p/text()').extract()).replace("\t","").replace("\n","").replace("\r","").replace(u'\xa0',''))
         item['tag']=''
         item['topic'] = topic
@@ -75,7 +76,7 @@ class ForumsSpider(CrawlSpider):
             item['author'] = post.xpath('.//div[@class="author"]/text()').extract_first()
             item['author_link'] = ''
             item['condition'] = condition
-            item['create_date'] = post.xpath('.//div[@class="date"]/span/text()').extract_first()
+            item['create_date'] = self.getDate(post.xpath('.//div[@class="date"]/span/text()').extract_first())
             item['post'] = self.cleanText(" ".join(post.xpath('.//div[@class="content"]/p/text()').extract()))
             # item['tag']='epilepsy'
             item['topic'] = topic

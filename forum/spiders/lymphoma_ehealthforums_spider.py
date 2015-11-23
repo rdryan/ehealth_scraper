@@ -43,10 +43,12 @@ class ForumsSpider(CrawlSpider):
                 ), follow=True),
         )
 
-    def cleanText(self,text):
+    def cleanText(self,text,printableOnly=True):
         soup = BeautifulSoup(text,'html.parser')
         text = soup.get_text();
-        text = re.sub("( +|\n|\r|\t|\0|\x0b|\xa0|\xbb|\xab)+",' ',text).strip()
+        text = re.sub("(-+| +|\n|\r|\t|\0|\x0b|\xa0|\xbb|\xab)+",' ',text).strip()
+        if(printableOnly):
+            return filter(lambda x: x in string.printable, text)
         return text 
     
     def getDate(self,date_str):
@@ -74,7 +76,8 @@ class ForumsSpider(CrawlSpider):
             item['author'] = post.css('.vt_asked_by_user').xpath("./a").xpath("text()").extract()[0]
             item['author_link']=post.css('.vt_asked_by_user').xpath("./a").xpath("@href").extract()[0]
             item['condition']=condition
-            item['create_date']= post.css('.vt_first_timestamp').xpath('text()').extract().extend(response.css('.vt_reply_timestamp').xpath('text()').extract())
+            create_date= post.css('.vt_first_timestamp').xpath('text()').extract().extend(response.css('.vt_reply_timestamp').xpath('text()').extract())
+            item['create_date']= self.getDate(create_date)
             item['post'] = self.cleanText(" ".join(post.css('.vt_post_body').xpath('text()').extract()))
             # item['tag']='Lymphoma'
             item['topic'] = topic

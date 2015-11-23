@@ -69,7 +69,7 @@ class CancerForum(CrawlSpider):
                 item['author'] = author
                 item['author_link'] = author_link
                 item['condition'] = condition
-                item['create_date'] = create_date
+                item['create_date'] = self.getDate(create_date)
                 item['post'] = message
                 # item['tag'] = ''
                 item['topic'] = subject

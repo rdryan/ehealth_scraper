@@ -90,7 +90,8 @@ class ForumsSpider(CrawlSpider):
             item['author'] = post.css('.username').xpath("./a/text()").extract()[0]
             item['author_link']=response.urljoin(post.css('.username').xpath("./a/@href").extract()[0])
             item['condition']=condition
-            item['create_date']= re.sub(" +|\n|\r|\t|\0|\x0b|\xa0",' ',post.xpath('./tr[1]/td[3]/div/text()').extract()[1]).replace("Posted:","").strip()
+            create_date= re.sub(" +|\n|\r|\t|\0|\x0b|\xa0",' ',post.xpath('./tr[1]/td[3]/div/text()').extract()[1]).replace("Posted:","").strip()
+            item['create_date']= self.getDate(create_date)
             item['post']=self.cleanText(post.css('.postedText').xpath('text()').extract()[0])
             item['topic'] = topic
             item['url']=url

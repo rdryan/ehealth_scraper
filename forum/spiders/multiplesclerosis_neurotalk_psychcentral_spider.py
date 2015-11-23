@@ -39,10 +39,12 @@ class ForumsSpider(CrawlSpider):
             ), callback='parsePost', follow=True),
         )
 
-    def cleanText(self,text):
+    def cleanText(self,text,printableOnly=True):
         soup = BeautifulSoup(text,'html.parser')
         text = soup.get_text();
-        text = re.sub("( +|\n|\r|\t|\0|\x0b|\xa0|\xbb|\xab)+",' ',text).strip()
+        text = re.sub("(-+| +|\n|\r|\t|\0|\x0b|\xa0|\xbb|\xab)+",' ',text).strip()
+        if(printableOnly):
+            return filter(lambda x: x in string.printable, text)
         return text 
 
     def getDate(self,date_str):
@@ -74,7 +76,8 @@ class ForumsSpider(CrawlSpider):
             item['author'] = self.cleanText(post.xpath('./tr[2]/td[1]/div[starts-with(@id,"postmenu")]/a').extract()[0].encode('ascii'))
             item['author_link'] = "http://neurotalk.psychcentral.com/%s" % post.xpath('./tr[2]/td[1]/div[starts-with(@id,"postmenu")]/a/@href').extract()[0]
             item['condition'] = condition
-            item['create_date'] = self.cleanText(" ".join(post.xpath('./tr/td[1]').extract()))
+            create_date = self.cleanText(" ".join(post.xpath('./tr/td[1]').extract()))
+            item['create_date'] = self.getDate(create_date)
             item['post'] = post_msg
             # item['tag'] = 'multiple-sclerosis'
             item['topic'] = topic
