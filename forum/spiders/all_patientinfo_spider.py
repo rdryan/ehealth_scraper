@@ -32,7 +32,7 @@ class ForumsSpider(Spider):
             create_date = time.strftime("%Y-%m-%d'T'%H:%M%S%z",  time.gmtime(epoch))
             return create_date
         except Exception:
-            logging.error(">>>>>"+date_str)
+            #logging.error(">>>>>"+date_str)
             return date_str
             
     def parse(self, response):
@@ -142,7 +142,7 @@ class ForumsSpider(Spider):
 #             create_date = time.strftime("%Y-%m-%d'T'%H:%M%S%z",  time.gmtime(epoch))
 #             return create_date
 #         except Exception:
-#             logging.error(">>>>>"+date_str)
+#             #logging.error(">>>>>"+date_str)
 #             return date_str
             
 #     def parsePostsList(self,response):

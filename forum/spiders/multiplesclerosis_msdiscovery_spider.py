@@ -46,7 +46,7 @@ class ForumsSpider(CrawlSpider):
             create_date = time.strftime("%Y-%m-%d'T'%H:%M%S%z",  time.gmtime(epoch))
             return create_date
         except Exception:
-            logging.error(">>>>>"+date_str)
+            #logging.error(">>>>>"+date_str)
             return date_str
             
     def parsePostsList(self, response):
@@ -91,7 +91,7 @@ class ForumsSpider(CrawlSpider):
             item['author'] = author
             item['author_link'] = author_link
             item['condition'] = condition
-            item['create_date'] = self.geteDate(create_date)
+            item['create_date'] = self.getDate(create_date)
             item['post'] = message
             # item['tag'] = 'epilepsy'
             item['topic'] = subject

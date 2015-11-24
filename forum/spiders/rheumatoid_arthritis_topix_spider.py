@@ -57,7 +57,7 @@ class ForumsSpider(CrawlSpider):
             create_date = time.strftime("%Y-%m-%d'T'%H:%M%S%z",  time.gmtime(epoch))
             return create_date
         except Exception:
-            logging.error(">>>>>"+date_str)
+            #logging.error(">>>>>"+date_str)
             return date_str
 
     # https://github.com/scrapy/dirbot/blob/master/dirbot/spiders/dmoz.py

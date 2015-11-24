@@ -61,7 +61,7 @@ class ForumsSpider(CrawlSpider):
             create_date = time.strftime("%Y-%m-%d'T'%H:%M%S%z",  time.gmtime(epoch))
             return create_date
         except Exception:
-            logging.error(">>>>>"+date_str)
+            #logging.error(">>>>>"+date_str)
             return date_str
             
     # http://connect.additudemag.com/groups/topic/Best_advise_for_son_dealing_with_depression/
