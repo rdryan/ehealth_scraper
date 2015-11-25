@@ -93,17 +93,13 @@ class ForumsSpider(CrawlSpider):
 
     rules = (
             Rule(LinkExtractor(
-                restrict_xpaths='//*[@id="search-results"]/h3',
+                restrict_xpaths='//h3/a',
                 canonicalize=True,
                 ), callback='parsePost', follow=True),
             Rule(LinkExtractor(
-                restrict_xpaths='//div[contains(@class, "pagination-home")]',
+                restrict_xpaths='//ul[@class="pagination"]',
                 canonicalize=True,
             ), follow=True),
-            Rule(LinkExtractor(
-                restrict_xpaths='//div[contains(@class, "pagination")]',
-                canonicalize=True,
-            ), callback='parsePost', follow=True),
         )
 
     def getDate(self,date_str):
@@ -121,34 +117,19 @@ class ForumsSpider(CrawlSpider):
         logging.info(response)
         sel = Selector(response)
         condition="breast cancer"
-        posts = sel.css('.comments-box')
+        posts = sel.xpath('//article[@class="post"]')
         items = []
-        topic = sel.css('.post-title').xpath('./text()').extract()[0].strip()
+        topic = ''.join(sel.xpath('//header[@class="header-post"]/h4/a/text()').extract())
         url = response.url
 
-        item = PostItemsList()
-        item['author'] = self.parseText(str=sel.css('.content-primary-post').xpath('./div[1]/ul/li[1]/a').extract()[0].strip())
-        item['author_link']=response.urljoin(sel.css('.content-primary-post').xpath('./div[1]/ul/li[1]/a/@href').extract()[0])
-        item['condition']=condition
-        create_date = self.parseText(sel.css('.content-primary-post').xpath('./div[1]/ul/li[1]/text()').extract()[1].split('\n')[1].strip()[1:])
-        item['create_date'] = self.getDate(create_date)
-        post_msg=self.parseText(str=sel.css('.content-primary-post').xpath('./div[2]/p').extract()[0])
-        item['post']=post_msg
-        # item['tag']=''
-        item['topic'] = topic
-        item['url']=url
-        logging.info(post_msg)
-        items.append(item)
         for post in posts:
-            if len(post.css('.post-info'))==0:
-                continue
             item = PostItemsList()
-            item['author'] = self.parseText(str=post.css('.post-info').xpath('./ul/li[1]/a').extract()[0].strip())
-            item['author_link']=response.urljoin(post.css('.post-info').xpath('./ul/li[1]/a/@href').extract()[0])
-            item['condition']=condition
-            item['create_date'] = self.parseText(str=post.css('.post-info').xpath('./ul/li[3]').extract()[0])
-            post_msg=self.parseText(str=post.xpath('./p').extract()[0])
-            item['post']=post_msg
+            item['author'] = ''.join(post.xpath('.//div[@class="username"]/a/text()').extract())
+            item['author_link']= response.urljoin(''.join(post.xpath('.//div[@class="username"]/a/@href').extract()) )
+            item['condition']= condition
+            item['create_date'] = self.getDate(''.join(post.xpath('.//time/@datetime').extract()))
+            post_msg= ''.join(post.xpath('.//div[@class="post-content"]//text()').extract())
+            item['post']= self.parseText(post_msg)
             # item['tag']=''
             item['topic'] = topic
             item['url']=url
